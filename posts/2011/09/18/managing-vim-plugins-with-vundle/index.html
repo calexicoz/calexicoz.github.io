@@ -1,23 +1,81 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Managing Vim Plugins with Vundle</h1> <p>If you are a heavy user of vim, chances are that over time you added a bunch of plugins, syntax files and other goodies to your vim configuration. This makes your editing experience smoother, but if you installed all these scripts manually, maintaining them can be a pain. Keeping up-to-date with the latest versions, or simply removing one you don&apos;t use anymore becomes difficult as files from the different scripts get mixed up in your <code>.vim</code> directory.</p> <p><a href="http://www.vim.org/scripts/script.php?script_id=1502">Vimballs</a> and <a href="http://www.vim.org/scripts/script.php?script_id=2332">pathogen</a> can both ease the process, but you still have to download the scripts manually, and take care of all the updates.</p> <h2>Vundle</h2> <p><a href="https://github.com/gmarik/vundle">Vundle</a> is basically a package manager for vim plugins. It will search, install, update and delete plugins for your while maintaining a nice directory structure. To install it:</p> <pre><code>git clone git://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-</code></pre> <p>Then, update your <code>.vimrc</code> with the following lines:</p> <pre><code>set rtp+=~/.vim/bundle/vundle/
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Managing Vim Plugins with Vundle</h1>
+      <p>If you are a heavy user of vim, chances are that over time you added a bunch of plugins, syntax files and other goodies to your vim configuration. This makes your editing experience smoother, but if you installed all these scripts manually, maintaining them can be a pain. Keeping up-to-date with the latest versions, or simply removing one you don&apos;t use anymore becomes difficult as files from the different scripts get mixed up in your <code>.vim</code> directory.</p>
+      <p>
+        <a href="http://www.vim.org/scripts/script.php?script_id=1502">Vimballs</a> and
+        <a href="http://www.vim.org/scripts/script.php?script_id=2332">pathogen</a> can both ease the process, but you still have to download the scripts manually, and take care of all the updates.</p>
+      <h2>Vundle</h2>
+      <p>
+        <a href="https://github.com/gmarik/vundle">Vundle</a> is basically a package manager for vim plugins. It will search, install, update and delete plugins for your while maintaining a nice directory structure. To install it:</p> <pre><code>git clone git://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+</code></pre>
+      <p>Then, update your <code>.vimrc</code> with the following lines:</p> <pre><code>set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
-</code></pre> <p>You&apos;re good to go.</p> <h2>Installing a plugin</h2> <p>Let&apos;s say that you are want to install <a href="http://www.vim.org/scripts/script.php?script_id=294">Align</a>. You can do a search for it in vim:</p> <pre><code>:BundleSearch align
-</code></pre> <p>And you will be greeted by a new window listing all the search results:</p> <pre><code class="language-vim"><span class="hljs-comment" style="color: #998; font-style: italic">&quot; Keymap: i - Install bundle; c - Cleanup; ...</span>
-<span class="hljs-comment" style="color: #998; font-style: italic">&quot; Search results for: align</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;right_align&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;align--Ahmad&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;Easy-alignment-to-column&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;Align.vim&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;AutoAlign&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;feralalign.vim&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;Align&apos;</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;Lineup--A-simple-text-aligner&apos;</span>
-</code></pre> <p>Press <code>i</code> to install a plugin, and then copy the relevant line to your <code>.vimrc</code> to have it loaded automatically when you launch vim:</p> <pre><code class="language-vim"><span class="hljs-comment" style="color: #998; font-style: italic">&quot; Initialize Vundle</span>
-<span class="hljs-keyword" style="color: #333; font-weight: bold">set</span> rtp+=~/.<span class="hljs-keyword" style="color: #333; font-weight: bold">vim</span>/bundle/vundle/
-<span class="hljs-keyword" style="color: #333; font-weight: bold">call</span> vundle#rc()
+</code></pre>
+      <p>You&apos;re good to go.</p>
+      <h2>Installing a plugin</h2>
+      <p>Let&apos;s say that you are want to install
+        <a href="http://www.vim.org/scripts/script.php?script_id=294">Align</a>. You can do a search for it in vim:</p> <pre><code>:BundleSearch align
+</code></pre>
+      <p>And you will be greeted by a new window listing all the search results:</p> <pre><code class="language-vim"><span class="hljs-comment" style="color: #998; font-style: italic;">&quot; Keymap: i - Install bundle; c - Cleanup; ...</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;">&quot; Search results for: align</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;right_align&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;align--Ahmad&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;Easy-alignment-to-column&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;Align.vim&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;AutoAlign&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;feralalign.vim&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;Align&apos;</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;Lineup--A-simple-text-aligner&apos;</span>
+</code></pre>
+      <p>Press <code>i</code> to install a plugin, and then copy the relevant line to your <code>.vimrc</code> to have it loaded automatically when you launch vim:</p> <pre><code class="language-vim"><span class="hljs-comment" style="color: #998; font-style: italic;">&quot; Initialize Vundle</span>
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">set</span> rtp+=~/.<span class="hljs-keyword" style="color: #333; font-weight: bold;">vim</span>/bundle/vundle/
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">call</span> vundle#rc()
 
-<span class="hljs-comment" style="color: #998; font-style: italic">&quot; My plugins</span>
-Bundle <span class="hljs-string" style="color: #d14">&apos;Align&apos;</span>
-</code></pre> <p>Sometimes, the result of the search isn&apos;t very useful and you won&apos;t be sure which plugin to install. I find that an easier way is to go directly to the <a href="http://vim-scripts.org/vim/scripts.html">list of scripts</a> where you will find a short description and links to the plugins&apos; pages.</p> <h2>Other commands</h2> <p>Updating all your plugins:</p> <pre><code>:BundleInstall!
-</code></pre> <p>Removing unused plugins:</p> <pre><code>:BundleClean
-</code></pre> <h2>Where to find plugins?</h2> <p>You can look on <a href="http://www.vim.org/">vim.org</a> for the list of all plugins, sorted by <a href="http://www.vim.org/scripts/script_search_results.php?keywords=&amp;script_type=&amp;order_by=rating&amp;direction=descending&amp;search=search">ratings</a> or <a href="http://www.vim.org/scripts/script_search_results.php?keywords=&amp;script_type=&amp;order_by=downloads&amp;direction=descending&amp;search=search">downloads</a>. This will give you an idea of what most people are using: chances are some of them will be useful to you too.</p> <p>Beginners might also want to look at the <a href="https://github.com/carlhuda/janus">janus</a> distribution, which makes starting with vim easier. More advanced users will enjoy the <a href="https://github.com/thoughtbot/dotfiles">Thoughtbot dotfiles</a>.</p> <p>That&apos;s it for today. Hope you enjoyed it.</p> <p>Until next time, Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+<span class="hljs-comment" style="color: #998; font-style: italic;">&quot; My plugins</span>
+Bundle <span class="hljs-string" style="color: #d14;">&apos;Align&apos;</span>
+</code></pre>
+      <p>Sometimes, the result of the search isn&apos;t very useful and you won&apos;t be sure which plugin to install. I find that an easier way is to go directly to the
+        <a href="http://vim-scripts.org/vim/scripts.html">list of scripts</a> where you will find a short description and links to the plugins&apos; pages.</p>
+      <h2>Other commands</h2>
+      <p>Updating all your plugins:</p> <pre><code>:BundleInstall!
+</code></pre>
+      <p>Removing unused plugins:</p> <pre><code>:BundleClean
+</code></pre>
+      <h2>Where to find plugins?</h2>
+      <p>You can look on
+        <a href="http://www.vim.org/">vim.org</a> for the list of all plugins, sorted by
+        <a href="http://www.vim.org/scripts/script_search_results.php?keywords=&amp;script_type=&amp;order_by=rating&amp;direction=descending&amp;search=search">ratings</a> or
+        <a href="http://www.vim.org/scripts/script_search_results.php?keywords=&amp;script_type=&amp;order_by=downloads&amp;direction=descending&amp;search=search">downloads</a>. This will give you an idea of what most people are using: chances are some of them will be useful to you too.</p>
+      <p>Beginners might also want to look at the
+        <a href="https://github.com/carlhuda/janus">janus</a> distribution, which makes starting with vim easier. More advanced users will enjoy the
+        <a href="https://github.com/thoughtbot/dotfiles">Thoughtbot dotfiles</a>.</p>
+      <p>That&apos;s it for today. Hope you enjoyed it.</p>
+      <p>Until next time, Cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

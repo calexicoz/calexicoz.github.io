@@ -1,9 +1,34 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Configuring your Bash Prompt (PS1)</h1> <p>As a developer, chances are you spend a lot of time every day in your terminal. Whether you use it for building, debugging, inspecting, deploying or administering, the shell is part of your life.</p> <p>Since you spend such a large amount of time using it, it makes sense to get comfortable with it. You can treat your shell as a temporary mean to an end, an impersonal hotel room of sorts, functional but never yours, or you can make it your home, a warm and cozy place, with your things, your habits and your tools.</p> <p>One way to achieve that goal, to make your shell your home, is to customize it. And what better place to start than the prompt? Most Linux distributions have a slightly customized prompt, designed to work in most situations. If you&apos;re lucky, it looks like this:</p> <pre><code class="language-bash">user@host $ ...
-</code></pre> <p>If you&apos;re not, it looks like this:</p> <pre><code class="language-bash">$ ...
-</code></pre> <p>Wouldn&apos;t it be better if you could have a little more information? Maybe the time of the day, the current directory, or just some colors? Thankfully you can, and it&apos;s easy.</p> <h2>PS1</h2> <p>The variable that contains the definition of the prompt format is <code>PS1</code>. You can experiment with it directly in your shell:</p> <pre><code class="language-bash">$ PS1=<span class="hljs-string" style="color: #d14">&quot;% &quot;</span>
-% PS1=<span class="hljs-string" style="color: #d14">&quot;! &quot;</span>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Configuring your Bash Prompt (PS1)</h1>
+      <p>As a developer, chances are you spend a lot of time every day in your terminal. Whether you use it for building, debugging, inspecting, deploying or administering, the shell is part of your life.</p>
+      <p>Since you spend such a large amount of time using it, it makes sense to get comfortable with it. You can treat your shell as a temporary mean to an end, an impersonal hotel room of sorts, functional but never yours, or you can make it your home, a warm and cozy place, with your things, your habits and your tools.</p>
+      <p>One way to achieve that goal, to make your shell your home, is to customize it. And what better place to start than the prompt? Most Linux distributions have a slightly customized prompt, designed to work in most situations. If you&apos;re lucky, it looks like this:</p> <pre><code class="language-bash">user@host $ ...
+</code></pre>
+      <p>If you&apos;re not, it looks like this:</p> <pre><code class="language-bash">$ ...
+</code></pre>
+      <p>Wouldn&apos;t it be better if you could have a little more information? Maybe the time of the day, the current directory, or just some colors? Thankfully you can, and it&apos;s easy.</p>
+      <h2>PS1</h2>
+      <p>The variable that contains the definition of the prompt format is <code>PS1</code>. You can experiment with it directly in your shell:</p> <pre><code class="language-bash">$ PS1=<span class="hljs-string" style="color: #d14;">&quot;% &quot;</span>
+% PS1=<span class="hljs-string" style="color: #d14;">&quot;! &quot;</span>
 ! ...
-</code></pre> <p>Apart from using a simple string, you can also use special variables such as:</p> <pre><code>\n     newline
+</code></pre>
+      <p>Apart from using a simple string, you can also use special variables such as:</p> <pre><code>\n     newline
 \r     carriage return
 
 \j     number of jobs managed by the shell
@@ -18,33 +43,77 @@
 \h     hostname up to the first &apos;.&apos;
 \u     username of the current user
 \w     current working directory
-</code></pre> <p>There are more available, which you can find in the man (search for PROMPTING). For example, in my shell, I use the following format:</p> <pre><code class="language-bash">$ PS1=<span class="hljs-string" style="color: #d14">&quot;\u \h \t \w \\$ &quot;</span>
+</code></pre>
+      <p>There are more available, which you can find in the man (search for PROMPTING). For example, in my shell, I use the following format:</p> <pre><code class="language-bash">$ PS1=<span class="hljs-string" style="color: #d14;">&quot;\u \h \t \w \\$ &quot;</span>
 user hostname 20:46:05 ~/folder $
-</code></pre> <h2>Colors</h2> <p>The shell has special escape codes for colors:</p> <pre><code class="language-bash">FG=COLOR_CODE
+</code></pre>
+      <h2>Colors</h2>
+      <p>The shell has special escape codes for colors:</p> <pre><code class="language-bash">FG=COLOR_CODE
 BG=COLOR_CODE
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># &apos;\033[&apos; + FOREGROUND + &apos;\033[&apos; + BACKGROUND</span>
-CODE=<span class="hljs-string" style="color: #d14">&quot;\033[<span class="hljs-variable" style="color: #008080">$FG</span>\033[<span class="hljs-variable" style="color: #008080">$BG</span>&quot;</span>
-</code></pre> <p>The <a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO">Bash Prompt HOWTO</a> provides a <a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html">script</a> to quickly list all the colors:</p> <p><a class="img" href="http://asciithoughts.com/images/20110809-1.png"><img src="http://asciithoughts.com/images/20110809-1.png" alt="Execution of script colors.sh"></a></p> <h2>Together</h2> <p>So you can now create your own prompt, just the way you want it :) In my <code>~/.bashrc</code> I have:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># We need to encapsulate with &quot;\[ \]&quot; to use in a prompt</span>
-BLUE1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;34m\]&apos;</span>
-BLUE2=<span class="hljs-string" style="color: #d14">&apos;\[\033[34m\]&apos;</span>
-GREEN1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;32m\]&apos;</span>
-GREEN2=<span class="hljs-string" style="color: #d14">&apos;\[\033[32m\]&apos;</span>
-CYAN1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;36m\]&apos;</span>
-CYAN2=<span class="hljs-string" style="color: #d14">&apos;\[\033[36m\]&apos;</span>
-RED1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;31m\]&apos;</span>
-RED2=<span class="hljs-string" style="color: #d14">&apos;\[\033[31m\]&apos;</span>
-PURPLE1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;35m\]&apos;</span>
-PURPLE2=<span class="hljs-string" style="color: #d14">&apos;\[\033[35m\]&apos;</span>
-BROWN1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;33m\]&apos;</span>
-BROWN2=<span class="hljs-string" style="color: #d14">&apos;\[\033[33m\]&apos;</span>
-GRIS1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;37m\]&apos;</span>
-GRIS2=<span class="hljs-string" style="color: #d14">&apos;\[\033[37m\]&apos;</span>
-YELLOW1=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;33m\]&apos;</span>
-YELLOW2=<span class="hljs-string" style="color: #d14">&apos;\[\033[33m\]&apos;</span>
-WHITE=<span class="hljs-string" style="color: #d14">&apos;\[\033[1;37m\]&apos;</span>
-NOCOLOUR=<span class="hljs-string" style="color: #d14">&apos;\[\033[0m\]&apos;</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># &apos;\033[&apos; + FOREGROUND + &apos;\033[&apos; + BACKGROUND</span>
+CODE=<span class="hljs-string" style="color: #d14;">&quot;\033[<span class="hljs-variable" style="color: #008080;">$FG</span>\033[<span class="hljs-variable" style="color: #008080;">$BG</span>&quot;</span>
+</code></pre>
+      <p>The
+        <a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO">Bash Prompt HOWTO</a> provides a
+        <a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html">script</a> to quickly list all the colors:</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20110809-1.png">
+          <img src="http://asciithoughts.com/images/20110809-1.png" alt="Execution of script colors.sh"> </a>
+      </p>
+      <h2>Together</h2>
+      <p>So you can now create your own prompt, just the way you want it :) In my <code>~/.bashrc</code> I have:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># We need to encapsulate with &quot;\[ \]&quot; to use in a prompt</span>
+BLUE1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;34m\]&apos;</span>
+BLUE2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[34m\]&apos;</span>
+GREEN1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;32m\]&apos;</span>
+GREEN2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[32m\]&apos;</span>
+CYAN1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;36m\]&apos;</span>
+CYAN2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[36m\]&apos;</span>
+RED1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;31m\]&apos;</span>
+RED2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[31m\]&apos;</span>
+PURPLE1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;35m\]&apos;</span>
+PURPLE2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[35m\]&apos;</span>
+BROWN1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;33m\]&apos;</span>
+BROWN2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[33m\]&apos;</span>
+GRIS1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;37m\]&apos;</span>
+GRIS2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[37m\]&apos;</span>
+YELLOW1=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;33m\]&apos;</span>
+YELLOW2=<span class="hljs-string" style="color: #d14;">&apos;\[\033[33m\]&apos;</span>
+WHITE=<span class="hljs-string" style="color: #d14;">&apos;\[\033[1;37m\]&apos;</span>
+NOCOLOUR=<span class="hljs-string" style="color: #d14;">&apos;\[\033[0m\]&apos;</span>
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># Don&apos;t forget to use double quotes &quot;</span>
-PS1=<span class="hljs-string" style="color: #d14">&quot;<span class="hljs-variable" style="color: #008080">$RED1</span>\u <span class="hljs-variable" style="color: #008080">$BLUE1</span>\h <span class="hljs-variable" style="color: #008080">$PURPLE1</span>\t <span class="hljs-variable" style="color: #008080">$GREEN2</span>\w <span class="hljs-variable" style="color: #008080">$BROWN2</span>\\$ <span class="hljs-variable" style="color: #008080">$NOCOLOUR</span>&quot;</span>
-</code></pre> <p>Which gives:</p> <p><a class="img" href="http://asciithoughts.com/images/20110809-2.png"><img src="http://asciithoughts.com/images/20110809-2.png" alt="My prompt"></a></p> <h2>Going further</h2> <p>This was just a simple customization, but you can do much more: you can run complex commands to create your prompt, using all the tools available in your system. If you want to know more, check out:</p> <ul> <li><a href="https://wiki.archlinux.org/index.php/Color_Bash_Prompt">Color Bash Prompt</a></li> <li><a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/index.html">The Bash Prompt HOWTO</a></li> <li><a href="http://www.askapache.com/linux/bash-power-prompt.html">Crazy Powerful Bash Prompt</a></li> </ul> <p>That&apos;s it for today. Hope you enjoyed it.</p> <p>Until next time, Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+<span class="hljs-comment" style="color: #998; font-style: italic;"># Don&apos;t forget to use double quotes &quot;</span>
+PS1=<span class="hljs-string" style="color: #d14;">&quot;<span class="hljs-variable" style="color: #008080;">$RED1</span>\u <span class="hljs-variable" style="color: #008080;">$BLUE1</span>\h <span class="hljs-variable" style="color: #008080;">$PURPLE1</span>\t <span class="hljs-variable" style="color: #008080;">$GREEN2</span>\w <span class="hljs-variable" style="color: #008080;">$BROWN2</span>\\$ <span class="hljs-variable" style="color: #008080;">$NOCOLOUR</span>&quot;</span>
+</code></pre>
+      <p>Which gives:</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20110809-2.png">
+          <img src="http://asciithoughts.com/images/20110809-2.png" alt="My prompt"> </a>
+      </p>
+      <h2>Going further</h2>
+      <p>This was just a simple customization, but you can do much more: you can run complex commands to create your prompt, using all the tools available in your system. If you want to know more, check out:</p>
+      <ul>
+        <li>
+          <a href="https://wiki.archlinux.org/index.php/Color_Bash_Prompt">Color Bash Prompt</a>
+        </li>
+        <li>
+          <a href="http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/index.html">The Bash Prompt HOWTO</a>
+        </li>
+        <li>
+          <a href="http://www.askapache.com/linux/bash-power-prompt.html">Crazy Powerful Bash Prompt</a>
+        </li>
+      </ul>
+      <p>That&apos;s it for today. Hope you enjoyed it.</p>
+      <p>Until next time, Cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

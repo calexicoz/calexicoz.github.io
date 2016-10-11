@@ -1,11 +1,85 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Animated GIFs with LICEcap, Preview and ImageMagick</h1> <p>Animated GIFs have seen a resurgence over the last few years. It&apos;s easy to see why...</p> <p><img src="http://media.giphy.com/media/AfbJToCgg40HS/giphy.gif" alt="Cute kitten and puppy"></p> <p>While I&apos;m grateful for puppies and kittens, the reason I like animated GIFs, and I think the reason they won over the web, is because GIF is a universal format. Point anyone to a URL, and no matter their platform/device, it&apos;s pretty much guaranteed they can see it.</p> <h2>Screencasts</h2> <p>Because GIF is such a universal format, it makes sense to use it for short screencasts. <a href="http://www.cockos.com/licecap/">LICEcap</a> is a tiny utility for Mac and Windows that allows you to quickly select a section of your screen and record it directly to a GIF file:</p> <p><a class="img" href="http://asciithoughts.com/images/20140302-licecap.gif"><img src="http://asciithoughts.com/images/20140302-licecap.gif" alt="LICEcap recording"></a></p> <h2>Editing</h2> <p>While LICEcap makes it super easy to quickly record GIFs, it lacks any editing capabilities. Sometimes, all you need to make your GIF perfect is remove a few frames, for errors, typos, dead time, etc. Keeping the smallest number of frames possible also helps with size.</p> <p>GIF being a standard format, you can open it in Preview to edit the frames. Simply click on a frame and press delete to delete it. When you&apos;re done, you can save the file.</p> <p><a class="img" href="http://asciithoughts.com/images/20140302-preview.png"><img src="http://asciithoughts.com/images/20140302-preview.png" alt="Editing in preview"></a></p> <p>Another alternative, if the GIF gets really big, is to use ImageMagick:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># Generate individual frames</span>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Animated GIFs with LICEcap, Preview and ImageMagick</h1>
+      <p>Animated GIFs have seen a resurgence over the last few years. It&apos;s easy to see why...</p>
+      <p>
+        <img src="http://media.giphy.com/media/AfbJToCgg40HS/giphy.gif" alt="Cute kitten and puppy"> </p>
+      <p>While I&apos;m grateful for puppies and kittens, the reason I like animated GIFs, and I think the reason they won over the web, is because GIF is a universal format. Point anyone to a URL, and no matter their platform/device, it&apos;s pretty much guaranteed they can see it.</p>
+      <h2>Screencasts</h2>
+      <p>Because GIF is such a universal format, it makes sense to use it for short screencasts.
+        <a href="http://www.cockos.com/licecap/">LICEcap</a> is a tiny utility for Mac and Windows that allows you to quickly select a section of your screen and record it directly to a GIF file:</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20140302-licecap.gif">
+          <img src="http://asciithoughts.com/images/20140302-licecap.gif" alt="LICEcap recording"> </a>
+      </p>
+      <h2>Editing</h2>
+      <p>While LICEcap makes it super easy to quickly record GIFs, it lacks any editing capabilities. Sometimes, all you need to make your GIF perfect is remove a few frames, for errors, typos, dead time, etc. Keeping the smallest number of frames possible also helps with size.</p>
+      <p>GIF being a standard format, you can open it in Preview to edit the frames. Simply click on a frame and press delete to delete it. When you&apos;re done, you can save the file.</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20140302-preview.png">
+          <img src="http://asciithoughts.com/images/20140302-preview.png" alt="Editing in preview"> </a>
+      </p>
+      <p>Another alternative, if the GIF gets really big, is to use ImageMagick:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># Generate individual frames</span>
 convert -coalesce input.gif frames.png
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># Do some editing, and then put the frames back together</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># Do some editing, and then put the frames back together</span>
 convert frames*.png output.gif
-</code></pre> <h2>Framerate</h2> <p>Your GIF is almost ready. Since your removed a few frames, and sticked to the essential, it&apos;s possible it&apos;s now a bit too fast. So let&apos;s reduce the framerate with <a href="http://www.imagemagick.org/">ImageMagick</a>:</p> <pre><code class="language-bash">convert     \
-  -loop 0   \  <span class="hljs-comment" style="color: #998; font-style: italic"># number of loops. 0 is infinite</span>
-  -delay 20 \  <span class="hljs-comment" style="color: #998; font-style: italic"># ticks between frames. 1 tick is 10ms, so 5FPS</span>
+</code></pre>
+      <h2>Framerate</h2>
+      <p>Your GIF is almost ready. Since your removed a few frames, and sticked to the essential, it&apos;s possible it&apos;s now a bit too fast. So let&apos;s reduce the framerate with
+        <a href="http://www.imagemagick.org/">ImageMagick</a>:</p> <pre><code class="language-bash">convert     \
+  -loop 0   \  <span class="hljs-comment" style="color: #998; font-style: italic;"># number of loops. 0 is infinite</span>
+  -delay 20 \  <span class="hljs-comment" style="color: #998; font-style: italic;"># ticks between frames. 1 tick is 10ms, so 5FPS</span>
   input.gif \
   output.gif
-</code></pre> <h2>Optimizing</h2> <p>Finally, we can use <a href="http://imageoptim.com/">ImageOptim</a> to optimize the file size:</p> <p><a class="img" href="http://asciithoughts.com/images/20140302-imageoptim.png"><img src="http://asciithoughts.com/images/20140302-imageoptim.png" alt="Optimization"></a></p> <p>And you&apos;re done! Your screencast is ready to be shared with the world.</p> <h2>Conclusion</h2> <p>While you won&apos;t be producing hours of videos with LICEcap, it&apos;s definitely a useful tool for one off screencasts and other small demos. In association with Preview, ImageMagick and ImageOptim, it makes for a fast and powerful workflow.</p> <p>Other alternatives and tools:</p> <ul> <li><a href="http://gifbrewery.com/">GIF Brewery</a></li> <li><a href="http://recordit.co/">Recordit</a></li> <li><a href="http://www.screenr.com/">Screenr</a></li> </ul> <p>That&apos;s it for today. Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+</code></pre>
+      <h2>Optimizing</h2>
+      <p>Finally, we can use
+        <a href="http://imageoptim.com/">ImageOptim</a> to optimize the file size:</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20140302-imageoptim.png">
+          <img src="http://asciithoughts.com/images/20140302-imageoptim.png" alt="Optimization"> </a>
+      </p>
+      <p>And you&apos;re done! Your screencast is ready to be shared with the world.</p>
+      <h2>Conclusion</h2>
+      <p>While you won&apos;t be producing hours of videos with LICEcap, it&apos;s definitely a useful tool for one off screencasts and other small demos. In association with Preview, ImageMagick and ImageOptim, it makes for a fast and powerful workflow.</p>
+      <p>Other alternatives and tools:</p>
+      <ul>
+        <li>
+          <a href="http://gifbrewery.com/">GIF Brewery</a>
+        </li>
+        <li>
+          <a href="http://recordit.co/">Recordit</a>
+        </li>
+        <li>
+          <a href="http://www.screenr.com/">Screenr</a>
+        </li>
+      </ul>
+      <p>That&apos;s it for today. Cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

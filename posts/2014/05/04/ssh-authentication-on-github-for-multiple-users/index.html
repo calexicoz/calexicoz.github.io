@@ -1,11 +1,37 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>SSH authentication on Github for multiple users</h1> <p>I have 2 Github accounts: a personal one, and a professional one. If you have more than one account on Github, you&apos;ve probably experienced this before:</p> <pre><code>ERROR: Permission to user2/repo.git denied to user1.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>SSH authentication on Github for multiple users</h1>
+      <p>I have 2 Github accounts: a personal one, and a professional one. If you have more than one account on Github, you&apos;ve probably experienced this before:</p> <pre><code>ERROR: Permission to user2/repo.git denied to user1.
 fatal: Could not read from remote repository.
 
 Please make sure you have the correct access rights
 and the repository exists.
-</code></pre> <h2>Why does this happen?</h2> <p>To better understand what&apos;s going on, let&apos;s assume we have 2 users:</p> <ul> <li><code>user1</code> is the main profile, associated with <code>~/.ssh/id_rsa</code></li> <li><code>user2</code> is a secondary profile, associated with <code>~/.ssh/id_github_rsa</code></li> </ul> <p>First, let&apos;s get some debugging info. In <code>~/.ssh/config</code>, add:</p> <pre><code>Host github.com
+</code></pre>
+      <h2>Why does this happen?</h2>
+      <p>To better understand what&apos;s going on, let&apos;s assume we have 2 users:</p>
+      <ul>
+        <li><code>user1</code> is the main profile, associated with <code>~/.ssh/id_rsa</code></li>
+        <li><code>user2</code> is a secondary profile, associated with <code>~/.ssh/id_github_rsa</code></li>
+      </ul>
+      <p>First, let&apos;s get some debugging info. In <code>~/.ssh/config</code>, add:</p> <pre><code>Host github.com
   LogLevel DEBUG
-</code></pre> <p>Then try again a <code>git push</code> in a repository owned by <code>user2</code>:</p> <pre><code>debug1: Connecting to github.com [192.30.252.131] port 22.
+</code></pre>
+      <p>Then try again a <code>git push</code> in a repository owned by <code>user2</code>:</p> <pre><code>debug1: Connecting to github.com [192.30.252.131] port 22.
 debug1: Connection established.
 [...]
 debug1: Authentications that can continue: publickey
@@ -13,23 +39,31 @@ debug1: Next authentication method: publickey
 debug1: Offering RSA public key: ~/.ssh/id_rsa
 [...]
 debug1: Authentication succeeded (publickey).
-</code></pre> <p>The key used for authentication is <code>id_rsa</code> attached to <code>user1</code>. This is the problem. SSH tries keys in a certain order, and <code>id_rsa</code> occurs first. The authentication succeeds at the SSH level (there IS a user attached to this key), but fails at the git level because <code>user1</code> is not a member of the repository we are trying to push to, owned by <code>user2</code>.</p> <p>Now that we understand what the problem is, let&apos;s try to fix it.</p> <h2>First attempt</h2> <p>Since SSH allows for custom configuration per host, the first idea that comes to mind is to create a special host with a preferred key. In <code>~/.ssh/config</code>, let&apos;s add a section for <code>user2</code>:</p> <pre><code>Host github-user2
+</code></pre>
+      <p>The key used for authentication is <code>id_rsa</code> attached to <code>user1</code>. This is the problem. SSH tries keys in a certain order, and <code>id_rsa</code> occurs first. The authentication succeeds at the SSH level (there IS a user attached to this key), but fails at the git level because <code>user1</code> is not a member of the repository we are trying to push to, owned by <code>user2</code>.</p>
+      <p>Now that we understand what the problem is, let&apos;s try to fix it.</p>
+      <h2>First attempt</h2>
+      <p>Since SSH allows for custom configuration per host, the first idea that comes to mind is to create a special host with a preferred key. In <code>~/.ssh/config</code>, let&apos;s add a section for <code>user2</code>:</p> <pre><code>Host github-user2
   User git
   Hostname github.com
   IdentityFile ~/.ssh/id_github_rsa
-</code></pre> <p>We will also need to update our github repository. We need to change the current <code>origin</code> from its default <code>git@github.com</code> to <code>github-user2</code>:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">cd</span> ~/projects/user2/project
-git remote <span class="hljs-built_in" style="color: #0086b3">set</span>-url origin github-user2:user2/project.git
-</code></pre> <p>Great! Let&apos;s try to push again:</p> <pre><code class="language-bash">ERROR: Permission to user2/project.git denied to user1.
-fatal: Could not <span class="hljs-built_in" style="color: #0086b3">read</span> from remote repository.
+</code></pre>
+      <p>We will also need to update our github repository. We need to change the current <code>origin</code> from its default <code>git@github.com</code> to <code>github-user2</code>:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3;">cd</span> ~/projects/user2/project
+git remote <span class="hljs-built_in" style="color: #0086b3;">set</span>-url origin github-user2:user2/project.git
+</code></pre>
+      <p>Great! Let&apos;s try to push again:</p> <pre><code class="language-bash">ERROR: Permission to user2/project.git denied to user1.
+fatal: Could not <span class="hljs-built_in" style="color: #0086b3;">read</span> from remote repository.
 
 Please make sure you have the correct access rights
 and the repository exists.
-</code></pre> <p>Mmmm.. Looks like that didn&apos;t do it. Let&apos;s increase our log level to the maximum:</p> <pre><code>Host github-user2
+</code></pre>
+      <p>Mmmm.. Looks like that didn&apos;t do it. Let&apos;s increase our log level to the maximum:</p> <pre><code>Host github-user2
   LogLevel DEBUG3
   User git
   Hostname github.com
   IdentityFile ~/.ssh/id_github_rsa
-</code></pre> <p>And push again:</p> <pre><code>debug2: ssh_connect: needpriv 0
+</code></pre>
+      <p>And push again:</p> <pre><code>debug2: ssh_connect: needpriv 0
 debug1: Connecting to github.com [192.30.252.128] port 22.
 debug1: Connection established.
 [...]
@@ -40,12 +74,50 @@ debug1: Next authentication method: publickey
 debug1: Offering RSA public key: ~/.ssh/id_rsa
 [...]
 debug1: Authentication succeeded (publickey).
-</code></pre> <p>And so here is where weirdness happens: <code>id_github_rsa</code> key seems to be recognized from our git config (marked as <code>explicit</code>), but somehow <code>id_rsa</code> is still used first. Why?</p> <p>It took me a minute to figure this one out. I spent some time searching and eventually found <a href="http://sealedabstract.com/code/github-ssh-with-multiple-identities-the-slightly-more-definitive-guide/">this blog post</a> by Drew Crawford. The problem comes from the way <code>IdentityFile</code> works. From the man:</p> <blockquote> <p>Specifies a file from which the user&apos;s DSA, ECDSA or RSA authentication identity is read. The default is <code>~/.ssh/identity</code> for protocol version 1, and <code>~/.ssh/id_dsa</code>, <code>~/.ssh/id_ecdsa</code> and <code>~/.ssh/id_rsa</code> for protocol version 2. <strong>Additionally, any identities represented by the authentication agent will be used for authentication.</strong> [...]</p> </blockquote> <p>So despite specifying a preferred key for authentication, SSH will <strong>first</strong> try keys already loaded in the agent. Since <code>id_rsa</code> is our main key and we use it everywhere, chances are it&apos;s loaded in the agent first, therefore overriding our configuration.</p> <p>With this new information in hand, let&apos;s update our SSH config.</p> <h2>Second attempt</h2> <p>So we need to tell SSH to ignore any keys already loaded in the agent, and just use the one we specify. Thankfully, there is an option for that, <code>IdentitiesOnly</code>:</p> <blockquote> <p>Specifies that ssh(1) should only use the authentication identity files configured in the ssh_config files, even if ssh-agent(1) or a PKCS11Provider offers more identities. The argument to this keyword must be <code>yes</code> or <code>no</code>. This option is intended for situations where ssh-agent offers many different identities. The default is <code>no</code>.</p> </blockquote> <p>Let&apos;s update our <code>~/.ssh/config</code>:</p> <pre><code>Host github-user2
+</code></pre>
+      <p>And so here is where weirdness happens: <code>id_github_rsa</code> key seems to be recognized from our git config (marked as <code>explicit</code>), but somehow <code>id_rsa</code> is still used first. Why?</p>
+      <p>It took me a minute to figure this one out. I spent some time searching and eventually found
+        <a href="http://sealedabstract.com/code/github-ssh-with-multiple-identities-the-slightly-more-definitive-guide/">this blog post</a> by Drew Crawford. The problem comes from the way <code>IdentityFile</code> works. From the man:</p>
+      <blockquote>
+        <p>Specifies a file from which the user&apos;s DSA, ECDSA or RSA authentication identity is read. The default is <code>~/.ssh/identity</code> for protocol version 1, and <code>~/.ssh/id_dsa</code>, <code>~/.ssh/id_ecdsa</code> and <code>~/.ssh/id_rsa</code> for protocol version 2.
+          <strong>Additionally, any identities represented by the authentication agent will be used for authentication.</strong> [...]</p>
+      </blockquote>
+      <p>So despite specifying a preferred key for authentication, SSH will
+        <strong>first</strong> try keys already loaded in the agent. Since <code>id_rsa</code> is our main key and we use it everywhere, chances are it&apos;s loaded in the agent first, therefore overriding our configuration.</p>
+      <p>With this new information in hand, let&apos;s update our SSH config.</p>
+      <h2>Second attempt</h2>
+      <p>So we need to tell SSH to ignore any keys already loaded in the agent, and just use the one we specify. Thankfully, there is an option for that, <code>IdentitiesOnly</code>:</p>
+      <blockquote>
+        <p>Specifies that ssh(1) should only use the authentication identity files configured in the ssh_config files, even if ssh-agent(1) or a PKCS11Provider offers more identities. The argument to this keyword must be <code>yes</code> or <code>no</code>. This option is intended for situations where ssh-agent offers many different identities. The default is <code>no</code>.</p>
+      </blockquote>
+      <p>Let&apos;s update our <code>~/.ssh/config</code>:</p> <pre><code>Host github-user2
   User git
   Hostname github.com
   IdentitiesOnly yes
   IdentityFile ~/.ssh/id_github_rsa
-</code></pre> <p>And try one last push:</p> <pre><code class="language-bash">$ <span class="hljs-built_in" style="color: #0086b3">cd</span> ~/projects/user2/project
+</code></pre>
+      <p>And try one last push:</p> <pre><code class="language-bash">$ <span class="hljs-built_in" style="color: #0086b3;">cd</span> ~/projects/user2/project
 $ git push
 Everything up-to-date
-</code></pre> <p>Hooray \o/</p> <h2>Recap</h2> <p>So to successfully authenticate on Github with a secondary user, you need to:</p> <ol> <li>Create a dedicated SSH config with <code>IdentityFile</code> and <code>IdentitiesOnly</code></li> <li>Update the <code>origin</code> URL of every repo to use the SSH config: <code>github-user:user/repo</code></li> </ol> <p>Not that complicated, but not easy to figure out either. It certainly took me a minute, especially since my keys were not always loaded in the same order in the SSH agent, which confused things a bit. So I hope this will avoid you some headaches :)</p> <p>That&apos;s it for today, cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+</code></pre>
+      <p>Hooray \o/</p>
+      <h2>Recap</h2>
+      <p>So to successfully authenticate on Github with a secondary user, you need to:</p>
+      <ol>
+        <li>Create a dedicated SSH config with <code>IdentityFile</code> and <code>IdentitiesOnly</code></li>
+        <li>Update the <code>origin</code> URL of every repo to use the SSH config: <code>github-user:user/repo</code></li>
+      </ol>
+      <p>Not that complicated, but not easy to figure out either. It certainly took me a minute, especially since my keys were not always loaded in the same order in the SSH agent, which confused things a bit. So I hope this will avoid you some headaches :)</p>
+      <p>That&apos;s it for today, cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,34 +1,91 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Preview all your development emails with Mailcatcher</h1> <p>One of the great features coming in Rails 4.1 is <a href="http://edgeguides.rubyonrails.org/4_1_release_notes.html#action-mailer-previews">Action Mailer Previews</a>. This will offer a quick and simple way to preview the emails of your application as your develop them.</p> <p>Unfortunately, not everyone will be able to jump to Rails 4.1 right away, and not everyone uses Rails. Your application might be written in PHP, Java, .Net, etc. Wouldn&apos;t it be great if you could easily preview all your emails without having to use Gmail as your SMTP?</p> <p>Well rejoice my friend: here comes <a href="http://mailcatcher.me/">mailcatcher</a>!</p> <h2>What is mailcatcher?</h2> <p>The premise of mailcatcher is really simple: <strong>it runs a SMTP server on your machine</strong>, on port <code>1025</code>, and saves all the emails it receives. It also comes with a web interface where you can inspect said emails:</p> <p><a class="img" href="http://asciithoughts.com/images/20140309-mailcatcher.png"><img src="http://asciithoughts.com/images/20140309-mailcatcher.png" alt="Mailcatcher screenshot"></a></p> <h2>Why is it awesome?</h2> <ul> <li><p><strong>It catches all emails</strong> (but doesn&apos;t actually send any). This means that you can not only verify that each email looks ok, but also that the right number of emails was sent, to the right people. This also means that you can use real data, like an existing customer list, without fear of spamming those users.</p></li> <li><p><strong>It is compatible</strong> with pretty much every language/framework. If your application sends emails, chances are it supports SMTP. So this provides you with a one-stop solution for all your email needs.</p></li> <li><p><strong>It gives you the relevant information</strong>: HTML, plain text, source. Quick and easy.</p></li> </ul> <h2>Installation</h2> <p>The <a href="http://mailcatcher.me/">mailcatcher site</a> provides a lot more details but the gist of it is really simple. If you have a reasonably recent version of Linux or Mac OS X, you probably have Ruby installed. If not, you will have to <a href="https://www.ruby-lang.org/en/installation/">install Ruby first</a>.</p> <p>Once you have Ruby installed:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># If you are using the system&apos;s Ruby:</span>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Preview all your development emails with Mailcatcher</h1>
+      <p>One of the great features coming in Rails 4.1 is
+        <a href="http://edgeguides.rubyonrails.org/4_1_release_notes.html#action-mailer-previews">Action Mailer Previews</a>. This will offer a quick and simple way to preview the emails of your application as your develop them.</p>
+      <p>Unfortunately, not everyone will be able to jump to Rails 4.1 right away, and not everyone uses Rails. Your application might be written in PHP, Java, .Net, etc. Wouldn&apos;t it be great if you could easily preview all your emails without having to use Gmail as your SMTP?</p>
+      <p>Well rejoice my friend: here comes
+        <a href="http://mailcatcher.me/">mailcatcher</a>!</p>
+      <h2>What is mailcatcher?</h2>
+      <p>The premise of mailcatcher is really simple:
+        <strong>it runs a SMTP server on your machine</strong>, on port <code>1025</code>, and saves all the emails it receives. It also comes with a web interface where you can inspect said emails:</p>
+      <p>
+        <a class="img" href="http://asciithoughts.com/images/20140309-mailcatcher.png">
+          <img src="http://asciithoughts.com/images/20140309-mailcatcher.png" alt="Mailcatcher screenshot"> </a>
+      </p>
+      <h2>Why is it awesome?</h2>
+      <ul>
+        <li>
+          <p>
+            <strong>It catches all emails</strong> (but doesn&apos;t actually send any). This means that you can not only verify that each email looks ok, but also that the right number of emails was sent, to the right people. This also means that you can use real data, like an existing customer list, without fear of spamming those users.</p>
+        </li>
+        <li>
+          <p>
+            <strong>It is compatible</strong> with pretty much every language/framework. If your application sends emails, chances are it supports SMTP. So this provides you with a one-stop solution for all your email needs.</p>
+        </li>
+        <li>
+          <p>
+            <strong>It gives you the relevant information</strong>: HTML, plain text, source. Quick and easy.</p>
+        </li>
+      </ul>
+      <h2>Installation</h2>
+      <p>The
+        <a href="http://mailcatcher.me/">mailcatcher site</a> provides a lot more details but the gist of it is really simple. If you have a reasonably recent version of Linux or Mac OS X, you probably have Ruby installed. If not, you will have to
+        <a href="https://www.ruby-lang.org/en/installation/">install Ruby first</a>.</p>
+      <p>Once you have Ruby installed:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># If you are using the system&apos;s Ruby:</span>
 sudo gem install mailcatcher
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># If you use rbenv/rvm/etc:</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># If you use rbenv/rvm/etc:</span>
 gem install mailcatcher
-</code></pre> <p>You can then run mailcatcher with:</p> <pre><code class="language-bash">mailcatcher     <span class="hljs-comment" style="color: #998; font-style: italic"># As a daemon</span>
-mailcatcher <span class="hljs-_">-f</span>  <span class="hljs-comment" style="color: #998; font-style: italic"># In the foreground</span>
-</code></pre> <p>If <code>mailcatcher</code> is not in your path, look at your ruby environment:</p> <pre><code class="language-bash">gem environment
-<span class="hljs-comment" style="color: #998; font-style: italic"># RubyGems Environment:</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - RUBYGEMS VERSION: 2.2.2</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - RUBY VERSION: 2.1.1 (2014-02-24 patchlevel 76) [x86_64-darwin13.0]</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - INSTALLATION DIRECTORY: /Users/Julien/.gem/ruby/2.1.1</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - RUBY EXECUTABLE: /Users/Julien/.rubies/2.1.1/bin/ruby</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - EXECUTABLE DIRECTORY: /Users/Julien/.gem/ruby/2.1.1/bin</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># - SPEC CACHE DIRECTORY: /Users/Julien/.gem/specs</span>
-</code></pre> <p>Look in the <code>EXECUTABLE DIRECTORY</code>:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># It should be here</span>
+</code></pre>
+      <p>You can then run mailcatcher with:</p> <pre><code class="language-bash">mailcatcher     <span class="hljs-comment" style="color: #998; font-style: italic;"># As a daemon</span>
+mailcatcher <span class="hljs-_">-f</span>  <span class="hljs-comment" style="color: #998; font-style: italic;"># In the foreground</span>
+</code></pre>
+      <p>If <code>mailcatcher</code> is not in your path, look at your ruby environment:</p> <pre><code class="language-bash">gem environment
+<span class="hljs-comment" style="color: #998; font-style: italic;"># RubyGems Environment:</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - RUBYGEMS VERSION: 2.2.2</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - RUBY VERSION: 2.1.1 (2014-02-24 patchlevel 76) [x86_64-darwin13.0]</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - INSTALLATION DIRECTORY: /Users/Julien/.gem/ruby/2.1.1</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - RUBY EXECUTABLE: /Users/Julien/.rubies/2.1.1/bin/ruby</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - EXECUTABLE DIRECTORY: /Users/Julien/.gem/ruby/2.1.1/bin</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># - SPEC CACHE DIRECTORY: /Users/Julien/.gem/specs</span>
+</code></pre>
+      <p>Look in the <code>EXECUTABLE DIRECTORY</code>:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># It should be here</span>
 /Users/Julien/.rubies/2.1.1/bin/mailcatcher
-</code></pre> <h2>Configuring Rails</h2> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic"># In config/environments/development.rb</span>
-config.action_mailer.delivery_method = <span class="hljs-symbol" style="color: #990073">:smtp</span>
+</code></pre>
+      <h2>Configuring Rails</h2> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic;"># In config/environments/development.rb</span>
+config.action_mailer.delivery_method = <span class="hljs-symbol" style="color: #990073;">:smtp</span>
 config.action_mailer.smtp_settings = { 
-  <span class="hljs-symbol" style="color: #990073">:address</span> =&gt; <span class="hljs-string" style="color: #d14">&quot;localhost&quot;</span>, <span class="hljs-symbol" style="color: #990073">:port</span> =&gt; <span class="hljs-number" style="color: #008080">1025</span> 
+  <span class="hljs-symbol" style="color: #990073;">:address</span> =&gt; <span class="hljs-string" style="color: #d14;">&quot;localhost&quot;</span>, <span class="hljs-symbol" style="color: #990073;">:port</span> =&gt; <span class="hljs-number" style="color: #008080;">1025</span> 
 }
-</code></pre> <p>The <a href="http://mailcatcher.me/">mailcatcher site</a> provides information for other platforms.</p> <h2>Starting it automatically</h2> <p>You will probably want to automatically start mailcatcher when you start your computer. It&apos;s pretty easy on Mac OS X:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># Path to mailcatcher. You might want to try </span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># &apos;which mailcatcher&apos; in your terminal first</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># to make sure it returns a result.</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># If it doesn&apos;t, and you know the path to the</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># executable, just set it here.</span>
-MAILCATCHER_PATH=`<span class="hljs-built_in" style="color: #0086b3">which</span> mailcatcher`
+</code></pre>
+      <p>The
+        <a href="http://mailcatcher.me/">mailcatcher site</a> provides information for other platforms.</p>
+      <h2>Starting it automatically</h2>
+      <p>You will probably want to automatically start mailcatcher when you start your computer. It&apos;s pretty easy on Mac OS X:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># Path to mailcatcher. You might want to try </span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># &apos;which mailcatcher&apos; in your terminal first</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># to make sure it returns a result.</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># If it doesn&apos;t, and you know the path to the</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># executable, just set it here.</span>
+MAILCATCHER_PATH=`<span class="hljs-built_in" style="color: #0086b3;">which</span> mailcatcher`
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># Create the daemon file</span>
-<span class="hljs-built_in" style="color: #0086b3">echo</span> <span class="hljs-string" style="color: #d14">&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;
+<span class="hljs-comment" style="color: #998; font-style: italic;"># Create the daemon file</span>
+<span class="hljs-built_in" style="color: #0086b3;">echo</span> <span class="hljs-string" style="color: #d14;">&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;
 &lt;!DOCTYPE plist PUBLIC \&quot;-//Apple//DTD PLIST 1.0//EN\&quot; \&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd\&quot;&gt;
 &lt;plist version=\&quot;1.0\&quot;&gt;
   &lt;dict&gt;
@@ -36,7 +93,7 @@ MAILCATCHER_PATH=`<span class="hljs-built_in" style="color: #0086b3">which</span
     &lt;string&gt;com.mailcatcher&lt;/string&gt;
     &lt;key&gt;ProgramArguments&lt;/key&gt;
     &lt;array&gt;
-      &lt;string&gt;<span class="hljs-variable" style="color: #008080">$MAILCATCHER_PATH</span>&lt;/string&gt;
+      &lt;string&gt;<span class="hljs-variable" style="color: #008080;">$MAILCATCHER_PATH</span>&lt;/string&gt;
       &lt;string&gt;-f&lt;/string&gt;
     &lt;/array&gt;
     &lt;key&gt;RunAtLoad&lt;/key&gt;
@@ -50,12 +107,31 @@ MAILCATCHER_PATH=`<span class="hljs-built_in" style="color: #0086b3">which</span
   &lt;/dict&gt;
 &lt;/plist&gt;
 &quot;</span> &gt; ~/Library/LaunchAgents/com.mailcatcher.plist
-</code></pre> <p>You can then start it for the current session with (make sure it&apos;s not already running):</p> <pre><code>launchctl load ~/Library/LaunchAgents/com.mailcatcher.plist
-</code></pre> <p>If you run into any trouble, look at the logs:</p> <pre><code>/tmp/com.mailcatcher.out
+</code></pre>
+      <p>You can then start it for the current session with (make sure it&apos;s not already running):</p> <pre><code>launchctl load ~/Library/LaunchAgents/com.mailcatcher.plist
+</code></pre>
+      <p>If you run into any trouble, look at the logs:</p> <pre><code>/tmp/com.mailcatcher.out
 /tmp/com.mailcatcher.err
-</code></pre> <h2>Caveat</h2> <p>If you use <code>rbenv</code>, <code>rvm</code>, etc., you might need a wrapper script for the environment:</p> <pre><code class="language-bash"><span class="hljs-meta" style="color: #999; font-weight: bold">#!/bin/bash</span>
-<span class="hljs-built_in" style="color: #0086b3">export</span> PATH=<span class="hljs-string" style="color: #d14">&quot;<span class="hljs-variable" style="color: #008080">$PATH</span>:/usr/local/bin&quot;</span>
-<span class="hljs-built_in" style="color: #0086b3">source</span> /usr/<span class="hljs-built_in" style="color: #0086b3">local</span>/share/chruby/chruby.sh
+</code></pre>
+      <h2>Caveat</h2>
+      <p>If you use <code>rbenv</code>, <code>rvm</code>, etc., you might need a wrapper script for the environment:</p> <pre><code class="language-bash"><span class="hljs-meta" style="color: #999; font-weight: bold;">#!/bin/bash</span>
+<span class="hljs-built_in" style="color: #0086b3;">export</span> PATH=<span class="hljs-string" style="color: #d14;">&quot;<span class="hljs-variable" style="color: #008080;">$PATH</span>:/usr/local/bin&quot;</span>
+<span class="hljs-built_in" style="color: #0086b3;">source</span> /usr/<span class="hljs-built_in" style="color: #0086b3;">local</span>/share/chruby/chruby.sh
 chruby 2.1
 mailcatcher <span class="hljs-_">-f</span>
-</code></pre> <h2>Conclusion</h2> <p>Mailcatcher is absolutely awesome and I don&apos;t know what I would do without it.</p> <p>That&apos;s it for today. Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+</code></pre>
+      <h2>Conclusion</h2>
+      <p>Mailcatcher is absolutely awesome and I don&apos;t know what I would do without it.</p>
+      <p>That&apos;s it for today. Cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

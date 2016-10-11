@@ -1,17 +1,68 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Using Pry in production (part 2)</h1> <p>Last week, we took a look at the basics of using <a href="http://pryrepl.org/">Pry</a> in production as a replacement for the standard IRB console. Today, let&apos;s look at a practical scenario and see how Pry can help us debug a misbehaving request.</p> <h2>Why use Pry?</h2> <p>After all, we already have New Relic which gives us a stack trace of every error in our application.</p> <p>Well, many errors do not result in an exception. Oftentimes the application responds, but with the wrong data. And oftentimes as well, the error only occurs in rare cases dependent on production data: it&apos;s hard to reproduce an error locally if you don&apos;t even know what makes the error occur in the first place.</p> <p>There are 2 ways developers deal with this problem:</p> <ul> <li><p>Have a full copy of the production environment (with up-to-date production data). While this may be feasible for small datasets, it becomes harder and harder as the data grows. Customers will also often complain about an error that just appeared, making it more likely that the important data does not yet exist in the test environment.</p></li> <li><p>Connect a local development environment to a remote database. I find this method too dangerous: it&apos;s a disaster waiting to happen. You should not trust yourself with a direct connection to the production database on your machine. Ever.</p></li> </ul> <p>In these situations, I find that Pry offers just enough functionality to do some actual debugging in production, while keeping you relatively safe.</p> <h2>PryNav</h2> <p>I like <a href="https://github.com/nixme/pry-nav">pry-nav</a> better than <a href="https://github.com/nixme/pry-debugger">pry-debugger</a> or <a href="https://github.com/deivid-rodriguez/pry-byebug">pry-byebug</a> because it works with every version of Ruby, and being pure ruby, doesn&apos;t require me to include the <code>debugger</code> gem in production. I can thus safely include <code>pry</code> and <code>pry-nav</code> in my <code>Gemfile</code>, keeping them unloaded, and only require them when I start the Rails console manually with my <code>pryrc</code>. You get the best of both worlds: no impact on running production servers, but the flexibility of a basic debugger when you need one. And it works everywhere.</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic"># Gemfile</span>
-gem <span class="hljs-string" style="color: #d14">&quot;pry&quot;</span>, <span class="hljs-symbol" style="color: #990073">:require</span> =&gt; <span class="hljs-literal" style="color: #008080">false</span>
-gem <span class="hljs-string" style="color: #d14">&quot;pry-nav&quot;</span>, <span class="hljs-symbol" style="color: #990073">:require</span> =&gt; <span class="hljs-literal" style="color: #008080">false</span>
-</code></pre> <h2>Scenario</h2> <p>One of my apps is a customer support app, and so it deals a lot with discussions, comments, support staff, etc. I had a case recently where a customer could not assign a particular discussion to a particular user. It worked (and had been working) for every other discussion and every other user, so it was fairly obvious that there was something peculiar about the data that triggered a bug. A first exploration of the code involved did not reveal any obvious clue, so this was thus a perfect use case for Pry.</p> <h4>Step 1: Authenticate</h4> <p>Rails provides you with a few methods to interact with your app directly from the console (see this <a href="http://pragmaticstudio.com/blog/2006/4/4/running-your-rails-app-headless">blog post</a> for a good introduction). The first step of every debugging session is often to authenticate as the user with something like that:</p> <pre><code class="language-ruby">[<span class="hljs-number" style="color: #008080">1</span>] pry(main)&gt; app.post <span class="hljs-string" style="color: #d14">&quot;/login&quot;</span>,  <span class="hljs-symbol" style="color: #990073">:user</span> =&gt; {<span class="hljs-symbol" style="color: #990073">:login</span> =&gt; <span class="hljs-string" style="color: #d14">&apos;joe&apos;</span>, <span class="hljs-symbol" style="color: #990073">:password</span> =&gt; <span class="hljs-string" style="color: #d14">&apos;password&apos;</span>}
-</code></pre> <p>For real applications however, this is unpractical as passwords are not stored in clear text in the database. We still need to login as our user though... While we can&apos;t use a login/password, most apps will have a <code>current_user</code> method or similar, that we can <strong>patch</strong>.</p> <p>First, let&apos;s edit our <code>current_user</code> method:</p> <pre><code>[1] pry(main)&gt; edit Authenticated#current_user -p
-</code></pre> <p>And overwrite it:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold">def</span> <span class="hljs-title" style="color: #900; font-weight: bold">current_user</span></span>
-  <span class="hljs-keyword" style="color: #333; font-weight: bold">return</span> User.find(<span class="hljs-number" style="color: #008080">1234</span>)
-<span class="hljs-keyword" style="color: #333; font-weight: bold">end</span>
-</code></pre> <p>From now on, every request will be made as user 1234.</p> <h4>Step 2: Set our breakpoint</h4> <p>We know our entry point: the controller action. So let&apos;s start there:</p> <pre><code>[2] pry(main)&gt; edit DiscussionsController#assign -p
-</code></pre> <p>and add a call to Pry:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold">def</span> <span class="hljs-title" style="color: #900; font-weight: bold">assign</span></span>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Using Pry in production (part 2)</h1>
+      <p>Last week, we took a look at the basics of using
+        <a href="http://pryrepl.org/">Pry</a> in production as a replacement for the standard IRB console. Today, let&apos;s look at a practical scenario and see how Pry can help us debug a misbehaving request.</p>
+      <h2>Why use Pry?</h2>
+      <p>After all, we already have New Relic which gives us a stack trace of every error in our application.</p>
+      <p>Well, many errors do not result in an exception. Oftentimes the application responds, but with the wrong data. And oftentimes as well, the error only occurs in rare cases dependent on production data: it&apos;s hard to reproduce an error locally if you don&apos;t even know what makes the error occur in the first place.</p>
+      <p>There are 2 ways developers deal with this problem:</p>
+      <ul>
+        <li>
+          <p>Have a full copy of the production environment (with up-to-date production data). While this may be feasible for small datasets, it becomes harder and harder as the data grows. Customers will also often complain about an error that just appeared, making it more likely that the important data does not yet exist in the test environment.</p>
+        </li>
+        <li>
+          <p>Connect a local development environment to a remote database. I find this method too dangerous: it&apos;s a disaster waiting to happen. You should not trust yourself with a direct connection to the production database on your machine. Ever.</p>
+        </li>
+      </ul>
+      <p>In these situations, I find that Pry offers just enough functionality to do some actual debugging in production, while keeping you relatively safe.</p>
+      <h2>PryNav</h2>
+      <p>I like
+        <a href="https://github.com/nixme/pry-nav">pry-nav</a> better than
+        <a href="https://github.com/nixme/pry-debugger">pry-debugger</a> or
+        <a href="https://github.com/deivid-rodriguez/pry-byebug">pry-byebug</a> because it works with every version of Ruby, and being pure ruby, doesn&apos;t require me to include the <code>debugger</code> gem in production. I can thus safely include <code>pry</code> and <code>pry-nav</code> in my <code>Gemfile</code>, keeping them unloaded, and only require them when I start the Rails console manually with my <code>pryrc</code>. You get the best of both worlds: no impact on running production servers, but the flexibility of a basic debugger when you need one. And it works everywhere.</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic;"># Gemfile</span>
+gem <span class="hljs-string" style="color: #d14;">&quot;pry&quot;</span>, <span class="hljs-symbol" style="color: #990073;">:require</span> =&gt; <span class="hljs-literal" style="color: #008080;">false</span>
+gem <span class="hljs-string" style="color: #d14;">&quot;pry-nav&quot;</span>, <span class="hljs-symbol" style="color: #990073;">:require</span> =&gt; <span class="hljs-literal" style="color: #008080;">false</span>
+</code></pre>
+      <h2>Scenario</h2>
+      <p>One of my apps is a customer support app, and so it deals a lot with discussions, comments, support staff, etc. I had a case recently where a customer could not assign a particular discussion to a particular user. It worked (and had been working) for every other discussion and every other user, so it was fairly obvious that there was something peculiar about the data that triggered a bug. A first exploration of the code involved did not reveal any obvious clue, so this was thus a perfect use case for Pry.</p>
+      <h4>Step 1: Authenticate</h4>
+      <p>Rails provides you with a few methods to interact with your app directly from the console (see this
+        <a href="http://pragmaticstudio.com/blog/2006/4/4/running-your-rails-app-headless">blog post</a> for a good introduction). The first step of every debugging session is often to authenticate as the user with something like that:</p> <pre><code class="language-ruby">[<span class="hljs-number" style="color: #008080;">1</span>] pry(main)&gt; app.post <span class="hljs-string" style="color: #d14;">&quot;/login&quot;</span>,  <span class="hljs-symbol" style="color: #990073;">:user</span> =&gt; {<span class="hljs-symbol" style="color: #990073;">:login</span> =&gt; <span class="hljs-string" style="color: #d14;">&apos;joe&apos;</span>, <span class="hljs-symbol" style="color: #990073;">:password</span> =&gt; <span class="hljs-string" style="color: #d14;">&apos;password&apos;</span>}
+</code></pre>
+      <p>For real applications however, this is unpractical as passwords are not stored in clear text in the database. We still need to login as our user though... While we can&apos;t use a login/password, most apps will have a <code>current_user</code> method or similar, that we can
+        <strong>patch</strong>.</p>
+      <p>First, let&apos;s edit our <code>current_user</code> method:</p> <pre><code>[1] pry(main)&gt; edit Authenticated#current_user -p
+</code></pre>
+      <p>And overwrite it:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold;">def</span> <span class="hljs-title" style="color: #900; font-weight: bold;">current_user</span></span>
+  <span class="hljs-keyword" style="color: #333; font-weight: bold;">return</span> User.find(<span class="hljs-number" style="color: #008080;">1234</span>)
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">end</span>
+</code></pre>
+      <p>From now on, every request will be made as user 1234.</p>
+      <h4>Step 2: Set our breakpoint</h4>
+      <p>We know our entry point: the controller action. So let&apos;s start there:</p> <pre><code>[2] pry(main)&gt; edit DiscussionsController#assign -p
+</code></pre>
+      <p>and add a call to Pry:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold;">def</span> <span class="hljs-title" style="color: #900; font-weight: bold;">assign</span></span>
   binding.pry
   [...]
-<span class="hljs-keyword" style="color: #333; font-weight: bold">end</span>
-</code></pre> <p>Now, call our action:</p> <pre><code>[3] pry(main)&gt; app.post &quot;/discussions/problems/1234/assign&quot;, :user_id =&gt; 768
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">end</span>
+</code></pre>
+      <p>Now, call our action:</p> <pre><code>[3] pry(main)&gt; app.post &quot;/discussions/problems/1234/assign&quot;, :user_id =&gt; 768
 
 From: /data/APP/current/app/controllers/discussions_controller.rb @ line 72 DiscussionsController#assign:
 
@@ -22,12 +73,14 @@ From: /data/APP/current/app/controllers/discussions_controller.rb @ line 72 Disc
     89: end
 
 [1] pry(#&lt;DiscussionsController&gt;)&gt;
-</code></pre> <p>So let&apos;s try the basics: run the line and verify if it works or not.</p> <pre><code>[1] pry(#&lt;DiscussionsController&gt;)&gt; @discussion.assign(user)
+</code></pre>
+      <p>So let&apos;s try the basics: run the line and verify if it works or not.</p> <pre><code>[1] pry(#&lt;DiscussionsController&gt;)&gt; @discussion.assign(user)
 =&gt; nil
 
 [2] pry(#&lt;DiscussionsController&gt;)&gt; @discussion.assignments
 =&gt; []
-</code></pre> <p>That doesn&apos;t fair well.. Let&apos;s step inside the method instead:</p> <pre><code>[3] pry(#&lt;DiscussionsController&gt;)&gt; step
+</code></pre>
+      <p>That doesn&apos;t fair well.. Let&apos;s step inside the method instead:</p> <pre><code>[3] pry(#&lt;DiscussionsController&gt;)&gt; step
 
 From: /data/APP/current/app/models/discussion/concerns/assignments.rb @ line 87 Discussion#assign:
 
@@ -38,12 +91,14 @@ From: /data/APP/current/app/models/discussion/concerns/assignments.rb @ line 87 
     90: end
     
 [4] pry(#&lt;DiscussionsController&gt;)&gt;
-</code></pre> <p>Something looks fishy:</p> <pre><code>[4] pry(#&lt;DiscussionsController&gt;)&gt; assigned?(user)
+</code></pre>
+      <p>Something looks fishy:</p> <pre><code>[4] pry(#&lt;DiscussionsController&gt;)&gt; assigned?(user)
 =&gt; true
 
 [5] pry(#&lt;DiscussionsController&gt;)&gt; assignments
 []
-</code></pre> <p>Let&apos;s look inside <code>assigned?</code></p> <pre><code>[6] pry(#&lt;DiscussionsController&gt;)&gt; step
+</code></pre>
+      <p>Let&apos;s look inside <code>assigned?</code></p> <pre><code>[6] pry(#&lt;DiscussionsController&gt;)&gt; step
 
 From: /data/APP/current/app/models/discussion/concerns/assignments.rb @ line 123 Discussion#assigned?:
 
@@ -52,4 +107,23 @@ From: /data/APP/current/app/models/discussion/concerns/assignments.rb @ line 123
     124: end
     
 [7] pry(#&lt;DiscussionsController&gt;)&gt;
-</code></pre> <p>And there is our bug! The <code>assigned?</code> method looks in our Redis cache to see if the discussion is already assigned to this user, but <code>assignments</code> looks in the database. Somehow the data in Redis has been corrupted, and is no more in sync with the database.</p> <h2>Step 3: Fix it</h2> <p>Now that we understand the bug, we can go back to our development environment and start writing tests, a fix, etc.. We can also start looking at logs to figure out how the Redis data got corrupted in the first place: we will have to fix that as well.</p> <h2>Conclusion</h2> <p>While Pry should not be used as the &quot;be-all and end-all&quot; for production problems, it does come in handy to debug issues related to data, that are hard or impossible to reproduce in other environments. By selectively patching code in the session, and stepping into requests, we can quickly figure out the source of problems, and then go back to our normal workflow to write the fix.</p> <p>I hope I was able to convince you that Pry is totally awesome. But don&apos;t take my word for it, try it for yourself: you&apos;ll be hooked!</p> <p>That&apos;s it for today, cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+</code></pre>
+      <p>And there is our bug! The <code>assigned?</code> method looks in our Redis cache to see if the discussion is already assigned to this user, but <code>assignments</code> looks in the database. Somehow the data in Redis has been corrupted, and is no more in sync with the database.</p>
+      <h2>Step 3: Fix it</h2>
+      <p>Now that we understand the bug, we can go back to our development environment and start writing tests, a fix, etc.. We can also start looking at logs to figure out how the Redis data got corrupted in the first place: we will have to fix that as well.</p>
+      <h2>Conclusion</h2>
+      <p>While Pry should not be used as the &quot;be-all and end-all&quot; for production problems, it does come in handy to debug issues related to data, that are hard or impossible to reproduce in other environments. By selectively patching code in the session, and stepping into requests, we can quickly figure out the source of problems, and then go back to our normal workflow to write the fix.</p>
+      <p>I hope I was able to convince you that Pry is totally awesome. But don&apos;t take my word for it, try it for yourself: you&apos;ll be hooked!</p>
+      <p>That&apos;s it for today, cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

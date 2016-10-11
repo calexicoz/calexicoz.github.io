@@ -1,19 +1,68 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>SSH Local Tunneling</h1> <p>What is tunneling? To put it simply, tunneling is the mechanism by which one port on your local machine <em>redirects</em> to another port on another machine. To understand what it means and why it&apos;s useful, let&apos;s look at a few use cases.</p> <h2>Local forward, simple case</h2> <p>Imagine you are working on a remote server, <code>example.com</code>. This server has a pretty standard configuration: Varnish, Apache, ...</p> <ul> <li>Port 22 : SSH, <em>publicly accessible</em></li> <li>Port 80 : Varnish, <em>publicly accessible</em></li> <li>Port 8000 : Apache, <em>localhost only (private)</em></li> </ul> <p>Let&apos;s now say that for some reason you are having troubles with the web server but you are not sure whether the problem is coming from Varnish or from the application itself. So you need to access Apache, but since Apache is listening on localhost, you can&apos;t just go to <code>http://example.com:8000</code>, you won&apos;t be able to connect. Here comes SSH tunneling to the rescue:</p> <pre><code>ssh -L 8000:127.0.0.1:8000 example.com
-</code></pre> <p>What does this do? It creates a tunnel between the local port <code>8000</code> on your machine to the IP address <code>127.0.0.1</code> and port <code>8000</code> on the remote machine. So, when you go to <code>http://127.0.0.1:8000</code>, your connection enters the tunnel and comes out on the other side knocking on Apache&apos;s door:</p> <pre><code>Browser -&gt; 127.0.0.1:8000 -&gt; SSH --+  # your machine
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>SSH Local Tunneling</h1>
+      <p>What is tunneling? To put it simply, tunneling is the mechanism by which one port on your local machine
+        <em>redirects</em> to another port on another machine. To understand what it means and why it&apos;s useful, let&apos;s look at a few use cases.</p>
+      <h2>Local forward, simple case</h2>
+      <p>Imagine you are working on a remote server, <code>example.com</code>. This server has a pretty standard configuration: Varnish, Apache, ...</p>
+      <ul>
+        <li>Port 22 : SSH,
+          <em>publicly accessible</em>
+        </li>
+        <li>Port 80 : Varnish,
+          <em>publicly accessible</em>
+        </li>
+        <li>Port 8000 : Apache,
+          <em>localhost only (private)</em>
+        </li>
+      </ul>
+      <p>Let&apos;s now say that for some reason you are having troubles with the web server but you are not sure whether the problem is coming from Varnish or from the application itself. So you need to access Apache, but since Apache is listening on localhost, you can&apos;t just go to <code>http://example.com:8000</code>, you won&apos;t be able to connect. Here comes SSH tunneling to the rescue:</p> <pre><code>ssh -L 8000:127.0.0.1:8000 example.com
+</code></pre>
+      <p>What does this do? It creates a tunnel between the local port <code>8000</code> on your machine to the IP address <code>127.0.0.1</code> and port <code>8000</code> on the remote machine. So, when you go to <code>http://127.0.0.1:8000</code>, your connection enters the tunnel and comes out on the other side knocking on Apache&apos;s door:</p> <pre><code>Browser -&gt; 127.0.0.1:8000 -&gt; SSH --+  # your machine
                                    |
 Apache &lt;-  127.0.0.1:8000 &lt;- SSH &lt;-+  # the server
-</code></pre> <h2>Local forward, binding</h2> <p>The full syntax of the local forward is this :</p> <pre><code>ssh -L bind:port:host:hostport example.com
-</code></pre> <p>By default, SSH will bind to <strong>all</strong> your network interfaces. So if you are connected to a network, and have an IP address (192.168.0.10 for example), anyone can connect to port 8000 on your machine and access the remote server:</p> <pre><code>Developer 2                          # other machine
+</code></pre>
+      <h2>Local forward, binding</h2>
+      <p>The full syntax of the local forward is this :</p> <pre><code>ssh -L bind:port:host:hostport example.com
+</code></pre>
+      <p>By default, SSH will bind to
+        <strong>all</strong> your network interfaces. So if you are connected to a network, and have an IP address (192.168.0.10 for example), anyone can connect to port 8000 on your machine and access the remote server:</p> <pre><code>Developer 2                          # other machine
   |
   +--&gt; 192.168.0.10:8000 -&gt; SSH --+  # your machine
                                   |
 Apache &lt;- 127.0.0.1:8000 &lt;- SSH &lt;-+  # the server
-</code></pre> <p>Maybe the access to this server is sensitive, and you don&apos;t want anybody to come and fiddle with it. In this case, you can specify which network interface you want to bind to, and maybe restrict it to localhost:</p> <pre><code>ssh -L localhost:8000:127.0.0.1:8000 example.com
-</code></pre> <h2>Local forward, advanced case</h2> <p>Let&apos;s go a little further. Imagine now that you want to access a web server located on <code>example2.com</code>. The problem is, <em>example2</em> is inside a private network and you don&apos;t have direct access to it. However, <em>example1</em> and <em>example2</em> are on the same network, and you have access to <em>example1</em>. This is the typical situation where you have access to a <em>bridge</em> machine which then gets you access to other machines. This is useful for us because SSH can redirect not only to a local port, but to any port on any machine we have access to on the remote server:</p> <pre><code>ssh -L 8000:example2.com:80 example1.com
-</code></pre> <p>Here is what happens : you enter the tunnel on port 8000 on your machine, get out on machine <code>example1.com</code> and then ask the operating system: &quot;get me to machine example2.com on port 80&quot;.</p> <pre><code>Browser -&gt; 127.0.0.1:8000 -&gt; SSH --+  # your machine
+</code></pre>
+      <p>Maybe the access to this server is sensitive, and you don&apos;t want anybody to come and fiddle with it. In this case, you can specify which network interface you want to bind to, and maybe restrict it to localhost:</p> <pre><code>ssh -L localhost:8000:127.0.0.1:8000 example.com
+</code></pre>
+      <h2>Local forward, advanced case</h2>
+      <p>Let&apos;s go a little further. Imagine now that you want to access a web server located on <code>example2.com</code>. The problem is,
+        <em>example2</em> is inside a private network and you don&apos;t have direct access to it. However,
+        <em>example1</em> and
+        <em>example2</em> are on the same network, and you have access to
+        <em>example1</em>. This is the typical situation where you have access to a
+        <em>bridge</em> machine which then gets you access to other machines. This is useful for us because SSH can redirect not only to a local port, but to any port on any machine we have access to on the remote server:</p> <pre><code>ssh -L 8000:example2.com:80 example1.com
+</code></pre>
+      <p>Here is what happens : you enter the tunnel on port 8000 on your machine, get out on machine <code>example1.com</code> and then ask the operating system: &quot;get me to machine example2.com on port 80&quot;.</p> <pre><code>Browser -&gt; 127.0.0.1:8000 -&gt; SSH --+  # your machine
                                    |
          example2.com:80 &lt;- SSH &lt;--+  # example1
-</code></pre> <h2>With SSH config</h2> <p>You can use aliases for this as well. If you regularly need to forward ports to/from the same host, you can do this in your <code>~/.ssh/config</code></p> <pre><code>Host ex1
+</code></pre>
+      <h2>With SSH config</h2>
+      <p>You can use aliases for this as well. If you regularly need to forward ports to/from the same host, you can do this in your <code>~/.ssh/config</code></p> <pre><code>Host ex1
   User user1
   Hostname example1.com
 
@@ -21,35 +70,61 @@ Host ex1proxy
   User user1
   Hostname example1.com
   LocalForward 8000 127.0.0.1:80
-</code></pre> <p>Which translates to:</p> <pre><code class="language-bash">ssh ex1       <span class="hljs-comment" style="color: #998; font-style: italic"># ssh user1@example.com</span>
-ssh ex1proxy  <span class="hljs-comment" style="color: #998; font-style: italic"># ssh user1@example.com -L 8000:127.0.0.1:80</span>
-</code></pre> <h2>Multiple forwards</h2> <p>You can of course use multiple forwards at the same time. So the following is valid:</p> <pre><code>ssh user1@example.com     \
+</code></pre>
+      <p>Which translates to:</p> <pre><code class="language-bash">ssh ex1       <span class="hljs-comment" style="color: #998; font-style: italic;"># ssh user1@example.com</span>
+ssh ex1proxy  <span class="hljs-comment" style="color: #998; font-style: italic;"># ssh user1@example.com -L 8000:127.0.0.1:80</span>
+</code></pre>
+      <h2>Multiple forwards</h2>
+      <p>You can of course use multiple forwards at the same time. So the following is valid:</p> <pre><code>ssh user1@example.com     \
   -L 8000:127.0.0.1:80    \
   -L 8080:127.0.0.1:8080  \
   -L 8000:example2.com:80
-</code></pre> <p>As well as:</p> <pre><code>Host ex1proxy
+</code></pre>
+      <p>As well as:</p> <pre><code>Host ex1proxy
   User user1
   Hostname example1.com
   LocalForward 8000 127.0.0.1:80
   LocalForward 8080 127.0.0.1:8080
   LocalForward 8000 example2.com:80
-</code></pre> <h2>Daemon mode</h2> <p>Finally, if you just want to use SSH to redirect ports, but do not need to launch commands on the remote server, you can do so with <code>-N</code>:</p> <pre><code>ssh ex1proxy -N &amp;  # launch SSH in daemon mode
+</code></pre>
+      <h2>Daemon mode</h2>
+      <p>Finally, if you just want to use SSH to redirect ports, but do not need to launch commands on the remote server, you can do so with <code>-N</code>:</p> <pre><code>ssh ex1proxy -N &amp;  # launch SSH in daemon mode
 [1] 30604          # PID of the process
-</code></pre> <p>When you want to kill it:</p> <pre><code>jobs
+</code></pre>
+      <p>When you want to kill it:</p> <pre><code>jobs
 [1]+  Running ssh ...  # list background jobs
 
 fg 1                   # bring job to the foreground
 ^CKilled by signal 2.  # stop it with CTRL+C
-</code></pre> <p>Or:</p> <pre><code>kill 30604
+</code></pre>
+      <p>Or:</p> <pre><code>kill 30604
 [1]+  Done  ssh ...
-</code></pre> <h2>Caveats</h2> <p>While I used the same port <code>8000</code> for the local and remote machine throughout this post, you don&apos;t have to. So the following is just as valid:</p> <pre><code>ssh -L 9000:127.0.0.1:8000 example.com
-</code></pre> <p>Privileged ports still apply. So binding to port 80 for example requires you to sudo:</p> <pre><code>$ ssh -L 80:127.0.0.1:8000 example.com
+</code></pre>
+      <h2>Caveats</h2>
+      <p>While I used the same port <code>8000</code> for the local and remote machine throughout this post, you don&apos;t have to. So the following is just as valid:</p> <pre><code>ssh -L 9000:127.0.0.1:8000 example.com
+</code></pre>
+      <p>Privileged ports still apply. So binding to port 80 for example requires you to sudo:</p> <pre><code>$ ssh -L 80:127.0.0.1:8000 example.com
 Privileged ports can only be forwarded by root.
 
 $ sudo ssh -L 80:127.0.0.1:8000 example.com
 Password: ********
 
 # SUCCESS
-</code></pre> <h2>Conclusion</h2> <p>Tunneling is an invaluable tool in your arsenal, and you should definitely get familiar with it. As usual, you can find more information in the man:</p> <pre><code>man ssh
+</code></pre>
+      <h2>Conclusion</h2>
+      <p>Tunneling is an invaluable tool in your arsenal, and you should definitely get familiar with it. As usual, you can find more information in the man:</p> <pre><code>man ssh
 man ssh_config
-</code></pre> <p>Until next time, Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+</code></pre>
+      <p>Until next time, Cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>

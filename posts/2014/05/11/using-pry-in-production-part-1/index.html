@@ -1,22 +1,66 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Using Pry in production (part 1)</h1> <p>If you don&apos;t know about <a href="http://pryrepl.org/">Pry</a> yet, you&apos;re missing out. It&apos;s a replacement REPL for Ruby with tons of features and many plugins, which makes it a perfect replacement for IRB, and as a result, for the standard Rails console.</p> <p>A little while ago, the fine folks at <a href="https://bugsnag.com">Bugsnag</a> wrote <a href="https://bugsnag.com/blog/production-pry">an article</a> about their usage of <a href="http://pryrepl.org/">Pry</a> in production. I&apos;ve been a Pry convert for quite some time as well, so today I&apos;d like to share my own tips and tricks.</p> <h2>Running Pry</h2> <p>I think the <a href="https://bugsnag.com/blog/production-pry">Bugsnag article</a> nails it pretty well, though I tweak some of the steps:</p> <ul> <li><p><strong>Use a dedicated machine</strong>: it&apos;s pretty easy for a console session to start eating up memory and resources, and you don&apos;t want that to disrupt your running application. The best machine is usually a job runner machine: all configured with the app, but not running any webserver.</p></li> <li><p><strong>Setup your Gemfile</strong>: instead of using <code>pry-rails</code>, I prefer to use the <code>pryrc</code> technique which I&apos;ll get back to in a minute. So my <code>Gemfile</code> looks like this:</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic"># Gemfile</span>
-gem <span class="hljs-string" style="color: #d14">&apos;pry&apos;</span>, <span class="hljs-symbol" style="color: #990073">:require</span> =&gt; <span class="hljs-literal" style="color: #008080">false</span>
-gem <span class="hljs-string" style="color: #d14">&apos;pry-nav&apos;</span>, <span class="hljs-symbol" style="color: #990073">:require</span> =&gt; <span class="hljs-literal" style="color: #008080">false</span>
-</code></pre></li> <li><p><strong>Use a shortcut</strong>: mine is called <code>t1</code>. This is only for quick edits though, not for long running tasks. If you are going to leave a session running for a while, processing data, you definitely want to run it inside a <code>screen</code> or <code>tmux</code> session.</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># ~/.bashrc</span>
-<span class="hljs-built_in" style="color: #0086b3">alias</span> t1=<span class="hljs-string" style="color: #d14">&apos;ssh -t X.X.X.X -C &quot;cd /data/APP/current &amp;&amp; RAILS_ENV=production bundle exec pry&quot;&apos;</span>
-</code></pre></li> </ul> <h2>Configure Pry</h2> <p>Since we are using a dedicated machine, we can have a shared <code>pryrc</code> for everyone that offers some Rails goodies. We are not using <code>pry-rails</code>, so we also need some of the code in <code>~/.pryrc</code> to do the Rails initialization:</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic"># ~/.pryrc</span>
-<span class="hljs-comment" style="color: #998; font-style: italic"># MISSING</span>
-</code></pre> <h2>Play</h2> <p>The first benefit of using Pry is that you get an actual editor for your code. I tend to do a lot of support related tasks, and so I often need to run one off snippets of code. They are slightly more complicated than a one-liner, but at the same time quite straight forward to write and modify. So my usual workflow is this:</p> <pre><code>PRODUCTION [1] pry(main)&gt; def find_ips; end
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml">
+    <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a class="title" href="/">ASCII Thoughts</a>
+        <ul class="menu">
+          <li>[
+            <a href="/follow/">Follow</a> ]</li>
+        </ul>
+      </div>
+      <h1>Using Pry in production (part 1)</h1>
+      <p>If you don&apos;t know about
+        <a href="http://pryrepl.org/">Pry</a> yet, you&apos;re missing out. It&apos;s a replacement REPL for Ruby with tons of features and many plugins, which makes it a perfect replacement for IRB, and as a result, for the standard Rails console.</p>
+      <p>A little while ago, the fine folks at
+        <a href="https://bugsnag.com">Bugsnag</a> wrote
+        <a href="https://bugsnag.com/blog/production-pry">an article</a> about their usage of
+        <a href="http://pryrepl.org/">Pry</a> in production. I&apos;ve been a Pry convert for quite some time as well, so today I&apos;d like to share my own tips and tricks.</p>
+      <h2>Running Pry</h2>
+      <p>I think the
+        <a href="https://bugsnag.com/blog/production-pry">Bugsnag article</a> nails it pretty well, though I tweak some of the steps:</p>
+      <ul>
+        <li>
+          <p>
+            <strong>Use a dedicated machine</strong>: it&apos;s pretty easy for a console session to start eating up memory and resources, and you don&apos;t want that to disrupt your running application. The best machine is usually a job runner machine: all configured with the app, but not running any webserver.</p>
+        </li>
+        <li>
+          <p>
+            <strong>Setup your Gemfile</strong>: instead of using <code>pry-rails</code>, I prefer to use the <code>pryrc</code> technique which I&apos;ll get back to in a minute. So my <code>Gemfile</code> looks like this:</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic;"># Gemfile</span>
+gem <span class="hljs-string" style="color: #d14;">&apos;pry&apos;</span>, <span class="hljs-symbol" style="color: #990073;">:require</span> =&gt; <span class="hljs-literal" style="color: #008080;">false</span>
+gem <span class="hljs-string" style="color: #d14;">&apos;pry-nav&apos;</span>, <span class="hljs-symbol" style="color: #990073;">:require</span> =&gt; <span class="hljs-literal" style="color: #008080;">false</span>
+</code></pre></li>
+        <li>
+          <p>
+            <strong>Use a shortcut</strong>: mine is called <code>t1</code>. This is only for quick edits though, not for long running tasks. If you are going to leave a session running for a while, processing data, you definitely want to run it inside a <code>screen</code> or <code>tmux</code> session.</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic;"># ~/.bashrc</span>
+<span class="hljs-built_in" style="color: #0086b3;">alias</span> t1=<span class="hljs-string" style="color: #d14;">&apos;ssh -t X.X.X.X -C &quot;cd /data/APP/current &amp;&amp; RAILS_ENV=production bundle exec pry&quot;&apos;</span>
+</code></pre></li>
+      </ul>
+      <h2>Configure Pry</h2>
+      <p>Since we are using a dedicated machine, we can have a shared <code>pryrc</code> for everyone that offers some Rails goodies. We are not using <code>pry-rails</code>, so we also need some of the code in <code>~/.pryrc</code> to do the Rails initialization:</p> <pre><code class="language-ruby"><span class="hljs-comment" style="color: #998; font-style: italic;"># ~/.pryrc</span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># MISSING</span>
+</code></pre>
+      <h2>Play</h2>
+      <p>The first benefit of using Pry is that you get an actual editor for your code. I tend to do a lot of support related tasks, and so I often need to run one off snippets of code. They are slightly more complicated than a one-liner, but at the same time quite straight forward to write and modify. So my usual workflow is this:</p> <pre><code>PRODUCTION [1] pry(main)&gt; def find_ips; end
 PRODUCTION [1] pry(main)&gt; edit find_ips
-</code></pre> <p>Since Pry is configured with vim as the default editor, this drops me in vim where I can start writing my code:</p> <pre><code class="language-ruby"><span class="hljs-keyword" style="color: #333; font-weight: bold">require</span> <span class="hljs-string" style="color: #d14">&quot;set&quot;</span>
+</code></pre>
+      <p>Since Pry is configured with vim as the default editor, this drops me in vim where I can start writing my code:</p> <pre><code class="language-ruby"><span class="hljs-keyword" style="color: #333; font-weight: bold;">require</span> <span class="hljs-string" style="color: #d14;">&quot;set&quot;</span>
 
-<span class="hljs-comment" style="color: #998; font-style: italic"># Check all the IP addresses used by one user</span>
-<span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold">def</span> <span class="hljs-title" style="color: #900; font-weight: bold">find_ips</span></span>
+<span class="hljs-comment" style="color: #998; font-style: italic;"># Check all the IP addresses used by one user</span>
+<span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold;">def</span> <span class="hljs-title" style="color: #900; font-weight: bold;">find_ips</span></span>
   list = Set.new
-  user = User.find <span class="hljs-number" style="color: #008080">1234</span>
+  user = User.find <span class="hljs-number" style="color: #008080;">1234</span>
   user.comments.each {<span class="hljs-params">|comment|</span> list &lt;&lt; comment.ip}
   list.each {<span class="hljs-params">|ip|</span> puts ip}
-<span class="hljs-keyword" style="color: #333; font-weight: bold">end</span>
-</code></pre> <p>The code is simple, but being able to work with it in a real editor is a big improvement. We can now run it, make adjustments, and iterate until we get it just right:</p> <pre><code>PRODUCTION [1] pry(main)&gt; find_ips
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">end</span>
+</code></pre>
+      <p>The code is simple, but being able to work with it in a real editor is a big improvement. We can now run it, make adjustments, and iterate until we get it just right:</p> <pre><code>PRODUCTION [1] pry(main)&gt; find_ips
 X.X.X.X
 X.X.X.X
 X.X.X.X
@@ -28,20 +72,46 @@ PRODUCTION [1] pry(main)&gt; find_ips
 X.X.X.X on Feb 1st, 2014 at 8:14:45 AM
 X.X.X.X on Mar 2nd, 2014 at 10:01:32 PM
 [...]
-</code></pre> <p>The other nice thing is that it makes it a lot easier to extract useful code. As I try to solve a particular problem, or extract data, I will often end up with a method 10 to 20 lines long that solves a particular support use case. If I want to save it for later, or integrate it into the main codebase, I can simply edit it again, and save it to a safe location from vim, or copy/paste it somewhere else. This would be a lot harder if all I had was a bunch of one-liners that only existed in the history of my session.</p> <h2>Patch</h2> <p>One of the most useful feature of Pry is it&apos;s ability to easily monkeypatch existing code. Let&apos;s say that we have a job that generates a CSV export of some reporting data. The export is great and all customers love it, but this one customer asked you to add another column to it. They have a somewhat narrow use case, and including the column for all customers would not necessarily be an improvement, so you decide to simply run the report once with this extra column, just for them. With Pry, this is super easy!</p> <p>First, we take a look at the CSV export itself:</p> <pre><code>PRODUCTION [1] pry(main)&gt; show-source Report#generate_csv
+</code></pre>
+      <p>The other nice thing is that it makes it a lot easier to extract useful code. As I try to solve a particular problem, or extract data, I will often end up with a method 10 to 20 lines long that solves a particular support use case. If I want to save it for later, or integrate it into the main codebase, I can simply edit it again, and save it to a safe location from vim, or copy/paste it somewhere else. This would be a lot harder if all I had was a bunch of one-liners that only existed in the history of my session.</p>
+      <h2>Patch</h2>
+      <p>One of the most useful feature of Pry is it&apos;s ability to easily monkeypatch existing code. Let&apos;s say that we have a job that generates a CSV export of some reporting data. The export is great and all customers love it, but this one customer asked you to add another column to it. They have a somewhat narrow use case, and including the column for all customers would not necessarily be an improvement, so you decide to simply run the report once with this extra column, just for them. With Pry, this is super easy!</p>
+      <p>First, we take a look at the CSV export itself:</p> <pre><code>PRODUCTION [1] pry(main)&gt; show-source Report#generate_csv
 
 def generate_csv
   [...]
   documents.each {|doc| csv &lt;&lt; doc.csv}
   [...]
 end
-</code></pre> <p>So we know that we need to modify the <code>Document#csv</code> method. It&apos;s a simple method that returns an array. We are going to <strong>patch</strong> the method: the modification will only exist within our Pry session and won&apos;t be written on disk. To do that, we use <code>edit -p</code> instead of the standard <code>edit</code>:</p> <pre><code>PRODUCTION [1] pry(main)&gt; edit Document#csv -p
-</code></pre> <p>Add the extra data:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold">def</span> <span class="hljs-title" style="color: #900; font-weight: bold">csv</span></span>
+</code></pre>
+      <p>So we know that we need to modify the <code>Document#csv</code> method. It&apos;s a simple method that returns an array. We are going to
+        <strong>patch</strong> the method: the modification will only exist within our Pry session and won&apos;t be written on disk. To do that, we use <code>edit -p</code> instead of the standard <code>edit</code>:</p> <pre><code>PRODUCTION [1] pry(main)&gt; edit Document#csv -p
+</code></pre>
+      <p>Add the extra data:</p> <pre><code class="language-ruby"><span class="hljs-function"><span class="hljs-keyword" style="color: #333; font-weight: bold;">def</span> <span class="hljs-title" style="color: #900; font-weight: bold;">csv</span></span>
   [ title,
     content,
     created_at,
     updated_at,
-    custom_data ] <span class="hljs-comment" style="color: #998; font-style: italic"># LINE ADDED</span>
-<span class="hljs-keyword" style="color: #333; font-weight: bold">end</span>
-</code></pre> <p>We can now generate the report for this customer, without affecting anyone else:</p> <pre><code>PRODUCTION [1] pry(main)&gt; Report.find(1234).generate_csv
-</code></pre> <p>And we&apos;re done!</p> <h2>Conclusion</h2> <p>Pry is a perfect replacement for IRB, and can greatly improve your life when working on production applications. Just for the ability to edit code in vim, Pry is absolutely worth it. I definitely recommend spending some time installing it, configuring it, and getting it working on your application.</p> <p>And if you&apos;ve never used Pry before, take a look at this great talk: <a href="https://www.youtube.com/watch?v=D9j_Mf91M0I">Ruby Conf 2013 - REPL driven development with Pry by Conrad Irwin</a>. It will make you an instant convert.</p> <p>That&apos;s it for today, cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 
+    custom_data ] <span class="hljs-comment" style="color: #998; font-style: italic;"># LINE ADDED</span>
+<span class="hljs-keyword" style="color: #333; font-weight: bold;">end</span>
+</code></pre>
+      <p>We can now generate the report for this customer, without affecting anyone else:</p> <pre><code>PRODUCTION [1] pry(main)&gt; Report.find(1234).generate_csv
+</code></pre>
+      <p>And we&apos;re done!</p>
+      <h2>Conclusion</h2>
+      <p>Pry is a perfect replacement for IRB, and can greatly improve your life when working on production applications. Just for the ability to edit code in vim, Pry is absolutely worth it. I definitely recommend spending some time installing it, configuring it, and getting it working on your application.</p>
+      <p>And if you&apos;ve never used Pry before, take a look at this great talk:
+        <a href="https://www.youtube.com/watch?v=D9j_Mf91M0I">Ruby Conf 2013 - REPL driven development with Pry by Conrad Irwin</a>. It will make you an instant convert.</p>
+      <p>That&apos;s it for today, cheers!</p>
+      <p class="footer"> Design inspired by
+        <a href="https://zeit.co/now/" target="_blank">Now</a>
+      </p>
+      <script src="//static.getclicky.com/js" type="text/javascript"></script>
+      <script type="text/javascript">
+        try {
+          clicky.init(66447145);
+        } catch (e) {}
+      </script>
+    </div>
+  </body>
+</html>
