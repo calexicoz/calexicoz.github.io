@@ -38,7 +38,7 @@ mrd
 &lt;/plist&gt;
 &quot;</span> &gt; ~/Library/LaunchAgents/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.plist
 </code></pre> <p>Launch it:</p> <pre><code>launchctl load ~/Library/LaunchAgents/com.$USER.mrd.plist
-</code></pre> <p>You should see the new shiny icon right on your desktop:</p> <p><a class="img" href="http://localhost:3000/images/20140316-mrd.png"><img src="http://localhost:3000/images/20140316-mrd.png" alt="MySQL RAM disk screenshot"></a></p> <p>If you run into any trouble, look at the logs:</p> <pre><code class="language-bash">/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.out
+</code></pre> <p>You should see the new shiny icon right on your desktop:</p> <p><a class="img" href="http://asciithoughts.com/images/20140316-mrd.png"><img src="http://asciithoughts.com/images/20140316-mrd.png" alt="MySQL RAM disk screenshot"></a></p> <p>If you run into any trouble, look at the logs:</p> <pre><code class="language-bash">/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.out
 /tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.err
 </code></pre> <h2>Configuring Rails</h2> <p>You can now open your <code>config/database.yml</code> and update the <code>test</code> section:</p> <pre><code class="language-yaml"><span class="hljs-attr">test:</span>
 <span class="hljs-attr">  adapter:</span> mysql2
