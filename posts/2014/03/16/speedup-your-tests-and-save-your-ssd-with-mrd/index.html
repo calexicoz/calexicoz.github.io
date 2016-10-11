@@ -1,0 +1,108 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>Speed up your tests and save your SSD with mrd</h1> <p><a href="https://github.com/mezis/mrd">mrd</a> creates a virtual disk in memory, and runs an instance of MySQL on it. The main application is running tests: no matter how fast your hard drive is, it will never be as fast as RAM. Since test data is volatile anyway, why not use the fastest medium available. As an added bonus, because it prevents all these volatile writes from going to disk, it can increase the lifespan of your SSD.</p> <p>While <code>mrd</code> is great, it&apos;s only great if you use it all the time. So in this article I&apos;ll share a few tips that have made using <code>mrd</code> a much more pleasant experience for me.</p> <h2>Installing it</h2> <p>Similar to our previous article on Mailcatcher, If you have a reasonably recent version of Linux or Mac OS X, you probably have Ruby installed. If not, you will have to <a href="https://www.ruby-lang.org/en/installation/">install Ruby first</a>. Once you have Ruby installed:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># If you are using the system&apos;s Ruby:</span>
+sudo gem install mrd
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># If you use rbenv/rvm/etc:</span>
+gem install mrd
+</code></pre> <h2>Running it</h2> <p>If you use <code>rvm</code>, <code>rbenv</code> or <code>chruby</code>, you will first need to create a wrapper script. I put mine in <code>~/.bin/launchd-mrd</code>:</p> <pre><code class="language-bash"><span class="hljs-meta" style="color: #999; font-weight: bold">#!/bin/bash</span>
+<span class="hljs-built_in" style="color: #0086b3">export</span> PATH=<span class="hljs-string" style="color: #d14">&quot;<span class="hljs-variable" style="color: #008080">$PATH</span>:/usr/local/bin&quot;</span>
+<span class="hljs-built_in" style="color: #0086b3">source</span> /usr/<span class="hljs-built_in" style="color: #0086b3">local</span>/share/chruby/chruby.sh
+chruby 2.1
+mrd
+</code></pre> <p>Make the script executable:</p> <pre><code class="language-bash">chmod +x ~/.bin/launchd-mrd
+</code></pre> <p>Launch it:</p> <pre><code class="language-bash">~/.bin/launchd-mrd
+<span class="hljs-comment" style="color: #998; font-style: italic"># Created Ramdisk at /dev/disk4</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Formatted Ramdisk at /dev/disk4</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Mounted Ramdisk at /Volumes/MySQLRAMDisk</span>
+<span class="hljs-comment" style="color: #998; font-style: italic">#</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># [...]</span>
+<span class="hljs-comment" style="color: #998; font-style: italic">#</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Starting MySQL server</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># MySQL is now running.</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Configure you client to use the root user, no password, and the socket at &apos;/Volumes/MySQLRAMDisk/mysql.sock&apos;.</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Just close this terminal or press ^C when you no longer need it.</span>
+</code></pre> <p>Great! It works perfectly. Let&apos;s now create a daemon to automatically start it on boot.</p> <h2>Starting it automatically</h2> <p>Create the startup script:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">echo</span> <span class="hljs-string" style="color: #d14">&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC \&quot;-//Apple//DTD PLIST 1.0//EN\&quot; \&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd\&quot;&gt;
+&lt;plist version=\&quot;1.0\&quot;&gt;
+  &lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd&lt;/string&gt;
+    &lt;key&gt;Program&lt;/key&gt;
+    &lt;string&gt;<span class="hljs-variable" style="color: #008080">$HOME</span>/.bin/launchd-mrd&lt;/string&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.err&lt;/string&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.out&lt;/string&gt;
+  &lt;/dict&gt;
+&lt;/plist&gt;
+&quot;</span> &gt; ~/Library/LaunchAgents/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.plist
+</code></pre> <p>Launch it:</p> <pre><code>launchctl load ~/Library/LaunchAgents/com.$USER.mrd.plist
+</code></pre> <p>You should see the new shiny icon right on your desktop:</p> <p><a class="img" href="http://localhost:3000/images/20140316-mrd.png"><img src="http://localhost:3000/images/20140316-mrd.png" alt="MySQL RAM disk screenshot"></a></p> <p>If you run into any trouble, look at the logs:</p> <pre><code class="language-bash">/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.out
+/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd.err
+</code></pre> <h2>Configuring Rails</h2> <p>You can now open your <code>config/database.yml</code> and update the <code>test</code> section:</p> <pre><code class="language-yaml"><span class="hljs-attr">test:</span>
+<span class="hljs-attr">  adapter:</span> mysql2
+<span class="hljs-attr">  encoding:</span> utf8
+<span class="hljs-attr">  collation:</span> utf8_unicode_ci
+<span class="hljs-attr">  host:</span> localhost
+<span class="hljs-attr">  database:</span> NAME
+<span class="hljs-attr">  username:</span> root
+<span class="hljs-attr">  password:</span> 
+<span class="hljs-attr">  socket:</span> /Volumes/MySQLRAMDisk/mysql.sock
+</code></pre> <p>Run the tests:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">cd</span> ~/project
+RAILS_ENV=<span class="hljs-built_in" style="color: #0086b3">test</span> bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake db:create
+bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake db:<span class="hljs-built_in" style="color: #0086b3">test</span>:prepare
+bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake <span class="hljs-built_in" style="color: #0086b3">test</span>
+..............................................................
+..............................................................
+...
+</code></pre> <p>Yeah \o/ This works!</p> <h2>Automating the database creation</h2> <p>Wouldn&apos;t it be better if we could automate the database creation/preparation as well? After all, you might have multiple projects, and you don&apos;t want to have to recreate the test database each time, load the schema, etc... So let&apos;s automate all that.</p> <p>Create a new script <code>~/.bin/prepare-test-dbs</code>:</p> <pre><code class="language-bash"><span class="hljs-meta" style="color: #999; font-weight: bold">#!/bin/bash
+</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># Load your preferred Ruby Version Manager</span>
+<span class="hljs-built_in" style="color: #0086b3">export</span> PATH=<span class="hljs-string" style="color: #d14">&quot;<span class="hljs-variable" style="color: #008080">$PATH</span>:/usr/local/bin&quot;</span>
+<span class="hljs-built_in" style="color: #0086b3">source</span> /usr/<span class="hljs-built_in" style="color: #0086b3">local</span>/share/chruby/chruby.sh
+<span class="hljs-built_in" style="color: #0086b3">source</span> /usr/<span class="hljs-built_in" style="color: #0086b3">local</span>/share/chruby/auto.sh
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># Wait until &apos;mrd&apos; is actually loaded, and MySQL running</span>
+until [[ -S /Volumes/MySQLRAMDisk/mysql.sock ]]; <span class="hljs-keyword" style="color: #333; font-weight: bold">do</span>
+  sleep 1
+<span class="hljs-keyword" style="color: #333; font-weight: bold">done</span>
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># Go through each project, and:</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># - create the database</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># - load the schema</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># - clear logs/*</span>
+<span class="hljs-comment" style="color: #998; font-style: italic"># - clear tmp/*</span>
+<span class="hljs-keyword" style="color: #333; font-weight: bold">for</span> dir <span class="hljs-keyword" style="color: #333; font-weight: bold">in</span> ~/projects/project1 \
+           ~/projects/project2 \
+           ~/projects/projectN; <span class="hljs-keyword" style="color: #333; font-weight: bold">do</span>
+  <span class="hljs-built_in" style="color: #0086b3">cd</span> <span class="hljs-string" style="color: #d14">&quot;<span class="hljs-variable" style="color: #008080">$dir</span>&quot;</span>
+  RAILS_ENV=<span class="hljs-built_in" style="color: #0086b3">test</span> bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake db:create
+  bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake db:<span class="hljs-built_in" style="color: #0086b3">test</span>:prepare
+  bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake <span class="hljs-built_in" style="color: #0086b3">log</span>:clear
+  bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake tmp:clear
+<span class="hljs-keyword" style="color: #333; font-weight: bold">done</span>
+</code></pre> <p>Make it executable:</p> <pre><code class="language-bash">chmod +x ~/.bin/prepare-test-dbs
+</code></pre> <p>And create the startup script:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">echo</span> <span class="hljs-string" style="color: #d14">&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC \&quot;-//Apple//DTD PLIST 1.0//EN\&quot; \&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd\&quot;&gt;
+&lt;plist version=\&quot;1.0\&quot;&gt;
+  &lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd-prepare&lt;/string&gt;
+    &lt;key&gt;Program&lt;/key&gt;
+    &lt;string&gt;<span class="hljs-variable" style="color: #008080">$HOME</span>/.bin/prepare-test-dbs&lt;/string&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd-prepare.err&lt;/string&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd-prepare.out&lt;/string&gt;
+  &lt;/dict&gt;
+&lt;/plist&gt;
+&quot;</span> &gt; ~/Library/LaunchAgents/com.<span class="hljs-variable" style="color: #008080">$USER</span>.mrd-prepare.plist
+</code></pre> <p>Now, each time your start your computer:</p> <ul> <li>The RAM disk will be created</li> <li><code>mrd</code> will launch a MySQL instance</li> <li>The script will prepare a test DB for each of your projects</li> </ul> <p>Run the tests:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">cd</span> ~/projects/project1
+bundle <span class="hljs-built_in" style="color: #0086b3">exec</span> rake <span class="hljs-built_in" style="color: #0086b3">test</span>
+..............................................................
+..............................................................
+...
+</code></pre> <p>You&apos;re all set!</p> <p>That&apos;s it for today. Cheers ;)</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 

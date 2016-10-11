@@ -1,0 +1,45 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <link href="/feed.rss" rel="alternate" title="ASCII Thoughts" type="application/rss+xml"> <style>img,pre{max-width:100%}.archive li,.menu li{list-style-type:none}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{color:#333;padding:.5em 1em}*{line-height:1.6;font-size:12px;font-family:Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif}.header .title,h1,h2,h3,h4,h5,h6{font-size:14px}h2{margin-top:2.5em}img{margin-bottom:1em}a.img{text-decoration:none}ul{margin:0 0 1.5em;padding:0 0 0 1em}li{margin:0;padding:0}.header,pre{margin-bottom:2em}code{color:#268BD2}pre{border:1px solid #EEE;padding:.7em .95em;overflow:scroll}.menu,.menu li,pre code{padding:0}pre,pre code{color:#333;background:#F7F7F7}.footer,.footer a{color:#BBB}.menu{margin:0;display:inline-block}.menu li{margin:0 1em 0 0;display:inline}.footer{padding-top:.5em;margin-top:4em;border-top:1px solid #DDD}.archive{padding:0}.archive li{white-space:nowrap;margin-bottom:.5em}.archive .date{color:#666}@media only screen and (min-width:768px){.container{width:640px;margin:auto}}</style> </head> <body> <div class="container"> <div class="header"> <a class="title" href="/">ASCII Thoughts</a> <ul class="menu"> <li>[ <a href="/follow/">Follow</a> ]</li> </ul> </div> <h1>SSH Config &amp; Aliases</h1> <p>SSH is a wonderful tool. It has many advanced features which can make your life easier as a developer, but they are not always well known or understood. So today, let&apos;s introduce one of these: aliases.</p> <p>When you are working on a project, you often have to switch between different servers: a local server, a test/staging server and a production server. So you find yourself typing this all day:</p> <pre><code class="language-bash">ssh user@virtual-machine
+ssh user@staging.server.com
+ssh user@production.server.com
+</code></pre> <p>Some people find a workaround with shell aliases:</p> <pre><code class="language-bash"><span class="hljs-built_in" style="color: #0086b3">alias</span> <span class="hljs-built_in" style="color: #0086b3">test</span>=<span class="hljs-string" style="color: #d14">&quot;ssh user@staging.server.com&quot;</span>
+</code></pre> <p>That works alright in most cases, but what happens for example when you have to use <code>scp</code> or a <code>rsync</code>: you have to type the full command again...</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># SSH to production server, quick and easy</span>
+prod
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># Copy a file from test server. #FAIL</span>
+scp user@user.staging.server.com:/path .
+</code></pre> <h2>The solution</h2> <p>Thankfully, SSH offers aliases too. They are defined in <code>~/.ssh/config</code>:</p> <pre><code>Host foo
+  User user
+  Hostname example.com
+</code></pre> <p>With that configuration in place, you can now do all of the following:</p> <pre><code class="language-bash"><span class="hljs-comment" style="color: #998; font-style: italic"># ssh user@example.com</span>
+ssh foo
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># scp user@example.com:/some/path /bar</span>
+scp foo:/some/path /bar
+
+<span class="hljs-comment" style="color: #998; font-style: italic"># rsync user@example.com:/some/path /bar</span>
+rsync foo:/some/path /bar
+</code></pre> <h2>All servers in a project</h2> <p>I follow a convention for all my servers and use suffixes to identify which server I&apos;m connecting too. So let&apos;s say I want quick access to all the environments of my project <em>example</em>. Here is what my config would look like:</p> <pre><code>Host example.dev
+  User deploy
+  Hostname virtual-machine
+
+Host example.test
+  User deploy
+  Hostname test.example.com
+
+Host example.prod
+  User deploy
+  Hostname www.example.com
+</code></pre> <p>This way, I can quickly go to any of those servers, and I don&apos;t have to remember their exact name, IP address, login, etc.:</p> <pre><code class="language-bash">ssh example.dev    <span class="hljs-comment" style="color: #998; font-style: italic"># local vm</span>
+ssh example.test   <span class="hljs-comment" style="color: #998; font-style: italic"># testing server</span>
+ssh example.prod   <span class="hljs-comment" style="color: #998; font-style: italic"># production server</span>
+</code></pre> <p>Of course, the following now works too:</p> <pre><code class="language-bash">rsync -avz example.test:/var/www path
+</code></pre> <h2>Other options</h2> <p>You don&apos;t have to limit yourself to <code>User</code> and <code>Hostname</code>, you can use the full range of SSH options. Here is a more advanced configuration:</p> <pre><code>Host example
+  Port 678
+  User special
+  Hostname 88.88.88.88
+  LocalForward 8000 127.0.0.1:80
+  PreferredAuthentications publickey
+  IdentityFile ~/.ssh/id_example_dsa
+  Compression yes
+</code></pre> <p>You can find more information about the options available and the general format of the file in the man:</p> <pre><code class="language-bash">man ssh_config
+</code></pre> <h2>Conclusion</h2> <p>SSH aliases can dramatically ease your life. Use them!</p> <p>Until next time, Cheers!</p> <p class="footer"> Design inspired by <a href="https://zeit.co/now/" target="_blank">Now</a> </p> <script src="//static.getclicky.com/js" type="text/javascript"></script> <script type="text/javascript">try{ clicky.init(66447145); }catch(e){}</script> </div> </body> </html> 

@@ -1,0 +1,118 @@
+/*****************************************************************************/
+/* GENERIC                                                                   */
+/*****************************************************************************/
+html{
+  -ms-text-size-adjust:100%;
+  -webkit-text-size-adjust:100%
+}
+body {
+  color: #333;
+  padding: 0.5em 1em;
+}
+* {
+  line-height: 1.6;
+  font-size: 12px;
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 14px;
+}
+h2 {
+  margin-top: 2.5em;
+}
+
+img {
+  max-width: 100%;
+  margin-bottom: 1em;
+}
+a.img {
+  text-decoration: none;
+}
+
+ul {
+  margin: 0 0 1.5em 0;
+  padding: 0 0 0 1em;
+}
+li {
+  margin: 0;
+  padding: 0;
+}
+
+code {
+  color: #268BD2;
+}
+pre {
+  border: 1px solid #EEE;
+  padding: 0.7em 0.95em;
+  margin-bottom: 2em;
+  max-width: 100%;
+  overflow: scroll;
+}
+pre, pre code {
+  color: #333;
+  background: #F7F7F7;
+}
+pre code {
+  padding: 0;
+}
+
+/*****************************************************************************/
+/* MENU & FOOTER                                                             */
+/*****************************************************************************/
+
+.header {
+  margin-bottom: 2em;
+}
+.header .title {
+  font-size: 14px;
+}
+
+.menu {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+.menu li {
+  margin: 0 1em 0 0;
+  padding: 0;
+  display: inline;
+  list-style-type: none;
+}
+
+.footer {
+  padding-top: 0.5em;
+  margin-top: 4em;
+  border-top: 1px solid #DDD;
+  color: #BBB;
+}
+.footer a {
+  color: #BBB;
+}
+
+/*****************************************************************************/
+/* ARCHIVE                                                                   */
+/*****************************************************************************/
+
+.archive {
+  padding: 0;
+}
+.archive li {
+  white-space: nowrap;
+  margin-bottom: 0.5em;
+  list-style-type: none;
+}
+.archive .date {
+  color: #666;
+}
+
+/*****************************************************************************/
+/* MEDIA QUERIES                                                             */
+/*****************************************************************************/
+
+@media only screen and (min-width: 768px) {
+  .container {
+    width: 640px;
+    margin: auto;
+  }
+}
